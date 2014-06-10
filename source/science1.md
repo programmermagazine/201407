@@ -55,7 +55,7 @@ Inside 的訊息其實是轉貼自 36氪這個來自中國的網站， 36氪網�
 6. 五組「電腦程式」都會與 30 位「判斷者」談過一次。
 7. 為了確認「判斷者」判斷結果為正確或錯誤， John Barnden 教授會監控並確認結果。
 
-### 我的感想
+### 問題在哪裡？
 
 我認為「英國雷丁大學發布的新聞稿」用詞有欠妥當，主要是因為下列語句實在是太過強烈：
 
@@ -69,10 +69,40 @@ Inside 的訊息其實是轉貼自 36氪這個來自中國的網站， 36氪網�
 
 最後、 inside 的轉載 [「電腦首度通過圖靈測試(36kr.com)」](http://share.inside.com.tw/posts/5079) 這篇，雖然有指出來源的 36氪網站文章，不過我想轉貼的人或許沒有仔細想過到底文章中的「通過圖靈測試」到底是甚麼意義，也沒想過這樣可能會誤導讀者，造成錯誤科學訊息的傳播問題。
 
+### 以前的程式表現如何？
+
+事實上、能夠成功欺騙人類，讓某些人認為對方是真人的交談程式，在人工智慧的歷史上很早就出現過了。
+
+遠在 1966 年時，Joseph Weizenbaum 就曾經創造出一個稱為 ELIZA 的程式，該程式採用了非常簡單的字串比對方法，結果竟然讓不少交談者認為 ELIZA 是個真人，以下是維基百科對 Eliza 程式的描述網址。
+
+* <http://en.wikipedia.org/wiki/ELIZA>
+
+在 2013 年 8 月號的程式人雜誌當中，筆者也在文章中展示了一個自己寫的「中文版 Eliza 聊天程式」，有興趣的朋友也可以閱讀該文章順便瞭解這種程式是怎麼做的。
+
+* [JavaScript (8) – 中文版 Eliza 聊天程式](http://programmermagazine.github.io/201308/htm/article2.html)
+
+另外、在 2011 年時有一個稱為 [Cleverbot 的程式](http://en.wikipedia.org/wiki/Cleverbot) 曾經創造過成功欺騙 60% 判斷者的紀錄，這個紀錄比這次比賽第一名的 Eugene Goostman 程式還要高。因此我們真的很難用「電腦首度通過圖靈測試」這樣的語句來描述這次比賽的結果，甚至這次比賽到底是否有創了什麼記錄都是很難確定的。
+
+所以、我真的覺得這樣的訊息是過於聳動了，因此特別寫了這篇文章來提醒大家，避免很多人會被這些訊息誤導。
+
+### 我的感想
+
 從這個案例中，我們可以看到在網路訊息發達的今天，要能夠不被誤導，恐怕必須要有很強的判斷力與追根究柢的精神，但是在這個訊息多如牛毛的世界中，錯誤與聳動的訊息往往傳播的特別快，這恐怕是網路世界亟待解決的問題之一啊！
 
 最後、我上 [g0v 的新聞小幫手](http://newshelper.g0v.tw/) 去檢舉了這個新聞，希望能讓誤導的情況稍微降低一下，檢舉網址如下：
 
 * <http://newshelper.g0v.tw/index/log/1819>
 
+### 參考文獻
+* <http://en.wikipedia.org/wiki/ELIZA>
+* [JavaScript (8) – 中文版 Eliza 聊天程式](http://programmermagazine.github.io/201308/htm/article2.html)
+* <http://en.wikipedia.org/wiki/Cleverbot>
+* 36氪網站:「计算机首次通过图灵测试」 -- <http://www.36kr.com/p/212680.html>
+* 百度百科：「图灵测试」 -- <http://baike.baidu.com/view/94296.htm>
+* Inside 網站：「電腦首度通過圖靈測試(36kr.com)」 -- <http://share.inside.com.tw/posts/5079>
+* [TURING TEST SUCCESS MARKS MILESTONE IN COMPUTING HISTORY](http://www.reading.ac.uk/news-and-events/releases/PR583836.aspx)
+* <http://en.wikipedia.org/wiki/Turing_test>
+* <http://www.wired.com/2014/06/turing-test-not-so-fast/>
+* <http://plato.stanford.edu/entries/turing-test/>
+* 資訊科學到底算不算是科學呢？ -- <http://pansci.tw/archives/44422>
 
