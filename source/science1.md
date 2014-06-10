@@ -29,7 +29,7 @@ Inside 的訊息其實是轉貼自 36氪這個來自中國的網站， 36氪網�
 
 36氪的 [「计算机首次通过图灵测试」](http://www.36kr.com/p/212680.html) 一文中指出了訊息來源為「英國雷丁大學的新聞稿」，連結如下：
 
-* [TURING TEST SUCCESS MARKS MILESTONE IN COMPUTING HISTORY](<http://www.reading.ac.uk/news-and-events/releases/PR583836.aspx>
+* [TURING TEST SUCCESS MARKS MILESTONE IN COMPUTING HISTORY](http://www.reading.ac.uk/news-and-events/releases/PR583836.aspx)
 
 該新聞稿提到 Eugene Goostman 這個程式通過圖靈測試的語句如下：
 
