@@ -114,4 +114,4 @@ Inside 的訊息其實是轉貼自 36氪這個來自中國的網站， 36氪網�
 * <http://plato.stanford.edu/entries/turing-test/>
 * 資訊科學到底算不算是科學呢？ -- <http://pansci.tw/archives/44422>
 * COMPUTING MACHINERY AND INTELLIGENCE , By A. M. Turing -- <http://www.csee.umbc.edu/courses/471/papers/turing.pdf>
-
+* 图灵测试，测的到底是什么？ -- <http://www.guokr.com/article/438573/>
