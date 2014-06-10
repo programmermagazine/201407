@@ -25,6 +25,14 @@ Inside 的訊息其實是轉貼自 36氪這個來自中國的網站， 36氪網�
 
 因此、對於上述新聞中所說的，[「计算机首次通过图灵测试」](http://www.36kr.com/p/212680.html) 這件事情，其實是採用 30% 的欺騙成功率，這是我們認為該宣稱有問題的關鍵原因。
 
+但是、為甚麼測試單位「英國雷丁大學」要採用 30% 做為圖靈測試是否通過的標準呢？我想原因應該來自於「圖靈」本人在那篇名為 「COMPUTING MACHINERY AND INTELLIGENCE 」的文章中所提到的一個預估，原文如下：
+
+> I believe that in about fifty years' time it will be possible to programme computers, with a storage capacity of about 10^9, to make them play the imitation game so well that an average interrogator will not have more than 70 percent chance of making the right identification after five minutes of questioning. … I believe that at the end of the century the use of words and general educated opinion will have altered so much that one will be able to speak of machines thinking without expecting to be contradicted.
+
+在上文當中「圖靈」預估 15 年候電腦就可以讓不超過 70% 的人做正確的決定。換句話說，就是成功的欺騙過 30% 的人。於是「英國雷丁大學」就把這個預估當成圖靈測試的基準了。
+
+但是、這只是圖靈的一個預估，並不代表圖靈測試就應該定為成功的欺騙過 30% 的人啊！ (而且這也不是學術界對圖靈測試的一個共識)。
+
 ### 測試單位的英文公告
 
 36氪的 [「计算机首次通过图灵测试」](http://www.36kr.com/p/212680.html) 一文中指出了訊息來源為「英國雷丁大學的新聞稿」，連結如下：
@@ -105,4 +113,5 @@ Inside 的訊息其實是轉貼自 36氪這個來自中國的網站， 36氪網�
 * <http://www.wired.com/2014/06/turing-test-not-so-fast/>
 * <http://plato.stanford.edu/entries/turing-test/>
 * 資訊科學到底算不算是科學呢？ -- <http://pansci.tw/archives/44422>
+* COMPUTING MACHINERY AND INTELLIGENCE , By A. M. Turing -- <http://www.csee.umbc.edu/courses/471/papers/turing.pdf>
 
