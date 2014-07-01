@@ -16,6 +16,8 @@
     * [電腦下棋簡介](focus1.html)
     * [五子棋程式 -- 以 JavaScript+Node.js 實作](focus2.html)
     * [電腦下棋的關鍵： Min-Max 對局搜尋與 Alpha-Beta 修剪算法](focus3.html)
+* 程式與科學
+    * [Eugene Goostman 程式真的通過了圖靈測試嗎？ (作者：陳鍾誠)](science1.html)
 * 程式人文集
     * [從 Arduino 到 AVR 晶片(2) -- Interrupts 中斷處理 (作者：Cooper Maa)](article1.html)
     * [對數 (logarithm) (作者：Bridan)](article3.html)
