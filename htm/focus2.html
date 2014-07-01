@@ -39,10 +39,13 @@ code > span.er { color: #ff0000; font-weight: bold; }
 </div>
 <h2 id="五子棋程式----以-javascriptnode.js-實作-作者陳鍾誠"><a href="#五子棋程式----以-javascriptnode.js-實作-作者陳鍾誠">五子棋程式 -- 以 JavaScript+Node.js 實作 (作者：陳鍾誠)</a></h2>
 <h3 id="簡介"><a href="#簡介">簡介</a></h3>
+<p>在本文中，我們設計了一個完全只是依賴「盤面評估函數」的五子棋程式，這個程式並沒有採用「Min-Max 對局搜尋法」，更沒有採用「Alpha-Beta 修剪法」，但是已經能夠與一般人對戰，有時候還可以贏得棋局。</p>
+<p>以下是這個程式執行的一個畫面，我們採用命令列的設計方式，使用者下子時必須輸入格子的座標，該座標由兩個 16 進位字母組成，例如圖中的 62 代表下在第六列第二行的位置。</p>
 <div class="figure">
 <img src="../img/chess.jpg" alt="圖、五子棋程式的一個對局畫面" /><p class="caption">圖、五子棋程式的一個對局畫面</p>
 </div>
 <h3 id="程式實作"><a href="#程式實作">程式實作</a></h3>
+<p>整個程式的實作只包含以下這個 chess.js 檔案，完整原始碼如下。</p>
 <p>檔案：chess.js</p>
 <pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="co">// 五子棋遊戲，單機命令列版</span>
 <span class="co">//   人對人下：node chess P2P</span>
@@ -237,6 +240,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
   <span class="ot">process</span>.<span class="fu">exit</span>(<span class="dv">0</span>);
 }</code></pre>
 <h3 id="執行結果"><a href="#執行結果">執行結果</a></h3>
+<p>以下是一場對局的過程片段，您可以看到最後是 x 贏了，也就是人類贏了。</p>
 <pre><code>C:\Dropbox\Public\web\ai\code\chess&gt;node chess P2C
   0 1 2 3 4 5 6 7 8 9 a b c d e f
 0 - - - - - - - - - - - - - - - - 0

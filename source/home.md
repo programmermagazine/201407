@@ -13,10 +13,9 @@
     * [編輯小語](editor.html)
     * [授權聲明](license.html)
 * 本期焦點
-    * [邏輯世界的歷史](focus1.html)
-    * [布林邏輯與推論系統 -- 何謂嚴格的數學證明？](focus2.html)
-    * [謂詞邏輯、一階邏輯與「哥德爾完備定理」](focus3.html)
-    * [從程式人的角度證明「哥德爾不完備定理」](focus4.html)
+    * [電腦下棋簡介](focus1.html)
+    * [五子棋程式 -- 以 JavaScript+Node.js 實作](focus2.html)
+    * [電腦下棋的關鍵： Min-Max 對局搜尋與 Alpha-Beta 修剪算法](focus3.html)
 * 程式人文集
     * [從 Arduino 到 AVR 晶片(2) -- Interrupts 中斷處理 (作者：Cooper Maa)](article1.html)
     * [對數 (logarithm) (作者：Bridan)](article3.html)
