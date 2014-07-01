@@ -1,0 +1,384 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" href="../css/pmag.css" type="text/css" />
+</head>
+<body>
+<div id="header_wrap">
+   <h1><a href="https://www.facebook.com/groups/programmerMagazine">程式人雜誌</a> <sub> --  <a href="https://dl.dropbox.com/u/101584453/pmag/201403/htm/home.html">2014 年 7 月號</a> (開放公益出版品)</sub></h1>
+</div>
+<div id="content">
+<div id="TOC">
+<ul>
+<li><a href="#開放電腦計畫-12-使用區塊式方法設計-mcu0-的-verilog-程式-作者陳鍾誠">開放電腦計畫 (12) – 使用區塊式方法設計 MCU0 的 Verilog 程式 (作者：陳鍾誠)</a></li>
+</ul>
+</div>
+<h2 id="開放電腦計畫-12-使用區塊式方法設計-mcu0-的-verilog-程式-作者陳鍾誠"><a href="#開放電腦計畫-12-使用區塊式方法設計-mcu0-的-verilog-程式-作者陳鍾誠">開放電腦計畫 (12) – 使用區塊式方法設計 MCU0 的 Verilog 程式 (作者：陳鍾誠)</a></h2>
+<h3 id="前言"><a href="#前言">前言</a></h3>
+<p>我們曾經在下列文章中設計出了 MCU0 迷你版這個只有六個指令的微控制器，整個實作只有 51 行。</p>
+<ul>
+<li><a href="http://programmermagazine.github.io/201312/htm/article5.html">開放電腦計畫 (6) – 一顆只有 51 行 Verilog 程式碼的 16 位元處理器 MCU0</a></li>
+</ul>
+<p>但是、上述程式雖然簡單，但卻是採用流程式的寫法。雖然、筆者不覺得流程式的寫法有甚麼特別的缺陷，但是對那些習慣採用硬體角度設計 Verilog 程式的人而言，似乎採用「區塊式的設計方式」才是正統，所以、筆者將於本文中採用「區塊式的方式重新設計」MCU0 迷你版，以便能學習「硬體設計者」的思考方式。</p>
+<h3 id="mcu0-迷你版的指令表"><a href="#mcu0-迷你版的指令表">MCU0 迷你版的指令表</a></h3>
+<p>為了方便讀者閱讀，不需要查閱前文，我們再次列出了 MCU0 迷你版的指令表如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">OP</th>
+<th align="left">name</th>
+<th align="left">格式 意</th>
+<th align="left">義</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">0</td>
+<td align="left">LD</td>
+<td align="left">LD C</td>
+<td align="left">A = [C]</td>
+</tr>
+<tr class="even">
+<td align="left">1</td>
+<td align="left">ADD</td>
+<td align="left">ADD C</td>
+<td align="left">A = A + [C]</td>
+</tr>
+<tr class="odd">
+<td align="left">2</td>
+<td align="left">JMP</td>
+<td align="left">JMP C</td>
+<td align="left">PC = C</td>
+</tr>
+<tr class="even">
+<td align="left">3</td>
+<td align="left">ST</td>
+<td align="left">ST C</td>
+<td align="left">[C] = A</td>
+</tr>
+<tr class="odd">
+<td align="left">4</td>
+<td align="left">CMP</td>
+<td align="left">CMP C</td>
+<td align="left">SW = A CMP [C]</td>
+</tr>
+<tr class="even">
+<td align="left">5</td>
+<td align="left">JEQ</td>
+<td align="left">JEQ C</td>
+<td align="left">if SW[30]=Z=1 then PC = C</td>
+</tr>
+</tbody>
+</table>
+<h3 id="mcu0-迷你版的區塊設計圖"><a href="#mcu0-迷你版的區塊設計圖">MCU0 迷你版的區塊設計圖</a></h3>
+<p>在MCU0 迷你版裏，總共有三個暫存器，分別是 A, PC 與 SW，一個具有兩組讀取 (i1/d1, i2/d2) 與一組寫入的記憶體 (wi/wd)，還有一個算術邏輯單元 ALU，這個電路的設計圖如下。</p>
+<div class="figure">
+<img src="../img/mcu0bm.jpg" alt="圖、MCU0bm 的區塊設計圖" /><p class="caption">圖、MCU0bm 的區塊設計圖</p>
+</div>
+<p>由於筆者不熟悉數位電路設計的繪圖軟體，因此就簡單的用 LibreOffice 的 Impress 繪製了上圖，純粹採用區塊表達法，並沒有使用標準的數位電路設計圖示。</p>
+<h3 id="原始碼"><a href="#原始碼">原始碼</a></h3>
+<p>根據上圖，我們設計出了下列 Verilog 程式，您應該可以很清楚的找出程式與圖形之間的對應關係。</p>
+<pre class="sourceCode Verilog"><code class="sourceCode verilog"><span class="kw">module</span> memory(<span class="dt">input</span> w, <span class="dt">input</span> [<span class="dv">11</span>:<span class="dv">0</span>] wi, <span class="dt">input</span> [<span class="dv">15</span>:<span class="dv">0</span>] wd, <span class="dt">input</span> [<span class="dv">11</span>:<span class="dv">0</span>] i1, <span class="dt">output</span> [<span class="dv">15</span>:<span class="dv">0</span>] d1, <span class="dt">input</span> [<span class="dv">11</span>:<span class="dv">0</span>] i2, <span class="dt">output</span> [<span class="dv">15</span>:<span class="dv">0</span>] d2);
+  <span class="dt">integer</span> i;  
+  <span class="dt">reg</span> [<span class="dv">7</span>:<span class="dv">0</span>] m[<span class="dv">0</span>:<span class="dv">2</span>**<span class="dv">12-1</span>];
+  <span class="kw">initial</span> <span class="kw">begin</span>
+    <span class="dt">$readmemh</span>(<span class="st">&quot;mcu0m.hex&quot;</span>, m);
+    <span class="kw">for</span> (i=<span class="dv">0</span>; i &lt; <span class="dv">32</span>; i=i<span class="dv">+2</span>) <span class="kw">begin</span>
+      <span class="dt">$display</span>(<span class="st">&quot;%x: %x&quot;</span>, i, {m[i], m[i<span class="dv">+1</span>]});
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+  <span class="kw">assign</span> d1 = {m[i1], m[i1<span class="dv">+1</span>]};
+  <span class="kw">assign</span> d2 = {m[i2], m[i2<span class="dv">+1</span>]};
+  <span class="kw">always</span> @(w) <span class="kw">begin</span>
+    <span class="kw">if</span> (w) {m[wi], m[wi<span class="dv">+1</span>]} = wd;
+  <span class="kw">end</span>
+<span class="kw">endmodule</span>
+
+<span class="kw">module</span> adder#(<span class="dt">parameter</span> W=<span class="dv">16</span>)(<span class="dt">input</span> [W<span class="dv">-1</span>:<span class="dv">0</span>] a, <span class="dt">input</span> [W<span class="dv">-1</span>:<span class="dv">0</span>] b, <span class="dt">output</span> [W<span class="dv">-1</span>:<span class="dv">0</span>] c);
+  <span class="kw">assign</span> c = a + b;
+<span class="kw">endmodule</span>
+
+<span class="kw">module</span> register#(<span class="dt">parameter</span> W=<span class="dv">16</span>)(<span class="dt">input</span> clock, w, <span class="dt">input</span> [W<span class="dv">-1</span>:<span class="dv">0</span>] ri, <span class="dt">output</span> [W<span class="dv">-1</span>:<span class="dv">0</span>] ro);
+<span class="dt">reg</span> [W<span class="dv">-1</span>:<span class="dv">0</span>] r;
+  <span class="kw">always</span> @(<span class="kw">posedge</span> clock) <span class="kw">begin</span>
+    <span class="kw">if</span> (w) r = ri;
+  <span class="kw">end</span>
+  <span class="kw">assign</span> ro=r;
+<span class="kw">endmodule</span>
+
+<span class="kw">module</span> alu(<span class="dt">input</span> [<span class="dv">3</span>:<span class="dv">0</span>] op, <span class="dt">input</span> [<span class="dv">15</span>:<span class="dv">0</span>] a, <span class="dt">input</span> [<span class="dv">15</span>:<span class="dv">0</span>] b, <span class="dt">output</span> <span class="dt">reg</span> [<span class="dv">15</span>:<span class="dv">0</span>] c);
+<span class="dt">parameter</span> [<span class="dv">3</span>:<span class="dv">0</span>] ZERO=<span class="bn">4&#39;h0</span>, ADD=<span class="bn">4&#39;h1</span>, CMP=<span class="bn">4&#39;he</span>, APASS=<span class="bn">4&#39;hf</span>;
+  <span class="kw">always</span> @(*) <span class="kw">begin</span>
+    <span class="kw">case</span> (op)
+      <span class="dv">ADD:</span> c = a+b;
+      <span class="dv">CMP:</span> <span class="kw">begin</span> c[<span class="dv">15</span>]=(a &lt; b); c[<span class="dv">14</span>]=(a==b); c[<span class="dv">13</span>:<span class="dv">0</span>]=<span class="bn">14&#39;h0</span>; <span class="kw">end</span>
+      <span class="dv">APASS:</span> c = a;
+      <span class="kw">default</span>: c = <span class="dv">0</span>;
+    <span class="kw">endcase</span>
+  <span class="kw">end</span>
+<span class="kw">endmodule</span>
+
+<span class="kw">module</span> mux#(<span class="dt">parameter</span> W=<span class="dv">16</span>)(<span class="dt">input</span> sel, <span class="dt">input</span> [W<span class="dv">-1</span>:<span class="dv">0</span>] i0, i1, <span class="dt">output</span> [W<span class="dv">-1</span>:<span class="dv">0</span>] o);
+  <span class="kw">assign</span> o=(sel)?i1:i0;
+<span class="kw">endmodule</span>
+
+<span class="ot">`define OP ir[15:12]</span>
+<span class="ot">`define C  ir[11:0]</span>
+<span class="ot">`define N  SW.r[15]</span>
+<span class="ot">`define Z  SW.r[14]</span>
+
+<span class="kw">module</span> mcu(<span class="dt">input</span> clock);
+  <span class="dt">parameter</span> [<span class="dv">3</span>:<span class="dv">0</span>] LD=<span class="bn">4&#39;h0</span>,ADD=<span class="bn">4&#39;h1</span>,JMP=<span class="bn">4&#39;h2</span>,ST=<span class="bn">4&#39;h3</span>,CMP=<span class="bn">4&#39;h4</span>,JEQ=<span class="bn">4&#39;h5</span>;
+  <span class="dt">reg</span>  mw, aw, pcmux, sww;
+  <span class="dt">reg</span> [<span class="dv">3</span>:<span class="dv">0</span>] aluop;
+  <span class="dt">wire</span> [<span class="dv">11</span>:<span class="dv">0</span>] pco, pci, pcnext;
+  <span class="dt">wire</span> [<span class="dv">15</span>:<span class="dv">0</span>] aluout, ao, swo, ir, mo;
+  register#(.W(<span class="dv">12</span>)) PC(clock, <span class="dv">1</span>, pci, pco);
+  adder#(.W(<span class="dv">12</span>)) adder0(<span class="dv">2</span>, pco, pcnext);
+  memory mem(mw, <span class="ot">`C</span>, ao, pco[<span class="dv">11</span>:<span class="dv">0</span>], ir, <span class="ot">`C</span>, mo);
+  register#(.W(<span class="dv">16</span>)) A(~clock, aw, aluout, ao);
+  register#(.W(<span class="dv">16</span>)) SW(~clock, sww, aluout, swo);
+  alu alu0(aluop, mo, ao, aluout);
+  mux#(.W(<span class="dv">12</span>)) muxpc(pcmux, pcnext, <span class="ot">`C</span>, pci);
+
+  <span class="kw">initial</span> <span class="kw">begin</span> 
+    PC.r = <span class="dv">0</span>; SW.r = <span class="dv">0</span>; mw = <span class="dv">0</span>; aw = <span class="dv">0</span>; pcmux=<span class="dv">0</span>; sww=<span class="dv">0</span>; aluop=alu0.ZERO;
+  <span class="kw">end</span>
+
+  <span class="kw">always</span> @(ir <span class="dt">or</span> mo <span class="dt">or</span> A.r) <span class="kw">begin</span>
+    mw = <span class="dv">0</span>;
+    aw = <span class="dv">0</span>;
+    sww = <span class="dv">0</span>;
+    pcmux = <span class="dv">0</span>;
+    aluop = alu0.ZERO;
+    <span class="kw">case</span> (<span class="ot">`OP</span>)
+      <span class="dv">LD:</span> <span class="kw">begin</span> aw=<span class="dv">1</span>; aluop=alu0.APASS; <span class="kw">end</span>     <span class="co">// LD C</span>
+      <span class="dv">ST:</span> mw=<span class="dv">1</span>;                                 <span class="co">// ST C</span>
+      <span class="dv">JMP:</span> pcmux=<span class="dv">1</span>;                             <span class="co">// JMP C</span>
+      <span class="dv">JEQ:</span> <span class="kw">if</span> (<span class="ot">`Z</span>) pcmux=<span class="dv">1</span>;                     <span class="co">// JEQ C</span>
+      <span class="dv">CMP:</span> <span class="kw">begin</span> sww=<span class="dv">1</span>; aluop = alu0.CMP; <span class="kw">end</span>   <span class="co">// CMP C</span>
+      <span class="dv">ADD:</span> <span class="kw">begin</span> aw=<span class="dv">1</span>; aluop=alu0.ADD; <span class="kw">end</span>      <span class="co">// ADD C</span>
+    <span class="kw">endcase</span>
+  <span class="kw">end</span>
+<span class="kw">endmodule</span>
+
+<span class="kw">module</span> main;         <span class="co">// 測試程式開始</span>
+<span class="dt">reg</span> clock;           <span class="co">// 時脈 clock 變數</span>
+
+mcu mcu0(clock);
+
+<span class="kw">initial</span> <span class="kw">begin</span> 
+  clock = <span class="dv">0</span>;
+  <span class="dt">$monitor</span>(<span class="st">&quot;%4dns pc=%x ir=%x mo=%x sw=%x a=%d mw=%b aluout=%x&quot;</span>, <span class="dt">$stime</span>, mcu0.PC.r, mcu0.ir, mcu0.mo, mcu0.SW.r, mcu0.A.r, mcu0.mw, mcu0.aluout);
+  <span class="bn">#1000</span> <span class="dt">$finish</span>;
+<span class="kw">end</span>
+<span class="kw">always</span> <span class="bn">#5</span> <span class="kw">begin</span> 
+  clock=~clock;    <span class="co">// 每隔 5ns 反相，時脈週期為 10ns</span>
+<span class="kw">end</span>  
+<span class="kw">endmodule</span></code></pre>
+<h3 id="輸入的機器碼-mcu0m.hex"><a href="#輸入的機器碼-mcu0m.hex">輸入的機器碼 mcu0m.hex</a></h3>
+<p>為了測試上述程式，我們同樣採用了計算 <code>SUM=1+2+...+10</code> 的這個程式作為輸入，以下是機器碼與對應的組合語言程式。</p>
+<pre><code>00 16  // 00    LOOP:   LD    I    
+40 1A  // 02            CMP   N    
+50 12  // 04            JEQ   EXIT
+10 18  // 06            ADD   K1    
+30 16  // 08            ST    I    
+00 14  // 0A            LD    SUM    
+10 16  // 0C            ADD   I    
+30 14  // 0E            ST    SUM    
+20 00  // 10            JMP   LOOP
+20 12  // 12    EXIT:   JMP   EXIT
+00 00  // 14    SUM:    WORD  0    
+00 00  // 16    I:      WORD  0    
+00 01  // 18    K1:     WORD  1    
+00 0A  // 1A    N:      WORD  10    </code></pre>
+<h3 id="執行結果"><a href="#執行結果">執行結果</a></h3>
+<p>編寫完成之後，我們就可以測試整個 mcu0bm.v 程式了，其執行結果如下所示。</p>
+<pre><code>C:\Dropbox\Public\web\oc\code\mcu0&gt;iverilog mcu0bm.v -o mcu0bm
+
+C:\Dropbox\Public\web\oc\code\mcu0&gt;vvp mcu0bm
+WARNING: mcu0bm.v:5: $readmemh(mcu0m.hex): Not enough words in the file for the
+requested range [0:4095].
+00000000: 0016
+00000002: 401a
+00000004: 5012
+00000006: 1018
+00000008: 3016
+0000000a: 0014
+0000000c: 1016
+0000000e: 3014
+00000010: 2000
+00000012: 2012
+00000014: 0000
+00000016: 0000
+00000018: 0001
+0000001a: 000a
+0000001c: xxxx
+0000001e: xxxx
+   0ns pc=000 ir=0016 mo=0000 sw=0000 a=    0 mw=0 aluout=0000
+   5ns pc=002 ir=401a mo=000a sw=0000 a=    0 mw=0 aluout=0000
+  15ns pc=004 ir=5012 mo=2012 sw=0000 a=    0 mw=0 aluout=0000
+  25ns pc=006 ir=1018 mo=0001 sw=0000 a=    0 mw=0 aluout=0001
+  30ns pc=006 ir=1018 mo=0001 sw=0000 a=    1 mw=0 aluout=0002
+  35ns pc=008 ir=3016 mo=0001 sw=0000 a=    1 mw=1 aluout=0000
+  45ns pc=00a ir=0014 mo=0000 sw=0000 a=    1 mw=0 aluout=0000
+  50ns pc=00a ir=0014 mo=0000 sw=0000 a=    0 mw=0 aluout=0000
+  55ns pc=00c ir=1016 mo=0001 sw=0000 a=    0 mw=0 aluout=0001
+  60ns pc=00c ir=1016 mo=0001 sw=0000 a=    1 mw=0 aluout=0002
+  65ns pc=00e ir=3014 mo=0001 sw=0000 a=    1 mw=1 aluout=0000
+  75ns pc=010 ir=2000 mo=0016 sw=0000 a=    1 mw=0 aluout=0000
+  85ns pc=000 ir=0016 mo=0001 sw=0000 a=    1 mw=0 aluout=0001
+  95ns pc=002 ir=401a mo=000a sw=0000 a=    1 mw=0 aluout=0000
+ 105ns pc=004 ir=5012 mo=2012 sw=0000 a=    1 mw=0 aluout=0000
+ 115ns pc=006 ir=1018 mo=0001 sw=0000 a=    1 mw=0 aluout=0002
+ 120ns pc=006 ir=1018 mo=0001 sw=0000 a=    2 mw=0 aluout=0003
+ 125ns pc=008 ir=3016 mo=0002 sw=0000 a=    2 mw=1 aluout=0000
+ 135ns pc=00a ir=0014 mo=0001 sw=0000 a=    2 mw=0 aluout=0001
+ 140ns pc=00a ir=0014 mo=0001 sw=0000 a=    1 mw=0 aluout=0001
+ 145ns pc=00c ir=1016 mo=0002 sw=0000 a=    1 mw=0 aluout=0003
+ 150ns pc=00c ir=1016 mo=0002 sw=0000 a=    3 mw=0 aluout=0005
+ 155ns pc=00e ir=3014 mo=0003 sw=0000 a=    3 mw=1 aluout=0000
+ 165ns pc=010 ir=2000 mo=0016 sw=0000 a=    3 mw=0 aluout=0000
+ 175ns pc=000 ir=0016 mo=0002 sw=0000 a=    3 mw=0 aluout=0002
+ 180ns pc=000 ir=0016 mo=0002 sw=0000 a=    2 mw=0 aluout=0002
+ 185ns pc=002 ir=401a mo=000a sw=0000 a=    2 mw=0 aluout=0000
+ 195ns pc=004 ir=5012 mo=2012 sw=0000 a=    2 mw=0 aluout=0000
+ 205ns pc=006 ir=1018 mo=0001 sw=0000 a=    2 mw=0 aluout=0003
+ 210ns pc=006 ir=1018 mo=0001 sw=0000 a=    3 mw=0 aluout=0004
+ 215ns pc=008 ir=3016 mo=0003 sw=0000 a=    3 mw=1 aluout=0000
+ 225ns pc=00a ir=0014 mo=0003 sw=0000 a=    3 mw=0 aluout=0003
+ 235ns pc=00c ir=1016 mo=0003 sw=0000 a=    3 mw=0 aluout=0006
+ 240ns pc=00c ir=1016 mo=0003 sw=0000 a=    6 mw=0 aluout=0009
+ 245ns pc=00e ir=3014 mo=0006 sw=0000 a=    6 mw=1 aluout=0000
+ 255ns pc=010 ir=2000 mo=0016 sw=0000 a=    6 mw=0 aluout=0000
+ 265ns pc=000 ir=0016 mo=0003 sw=0000 a=    6 mw=0 aluout=0003
+ 270ns pc=000 ir=0016 mo=0003 sw=0000 a=    3 mw=0 aluout=0003
+ 275ns pc=002 ir=401a mo=000a sw=0000 a=    3 mw=0 aluout=0000
+ 285ns pc=004 ir=5012 mo=2012 sw=0000 a=    3 mw=0 aluout=0000
+ 295ns pc=006 ir=1018 mo=0001 sw=0000 a=    3 mw=0 aluout=0004
+ 300ns pc=006 ir=1018 mo=0001 sw=0000 a=    4 mw=0 aluout=0005
+ 305ns pc=008 ir=3016 mo=0004 sw=0000 a=    4 mw=1 aluout=0000
+ 315ns pc=00a ir=0014 mo=0006 sw=0000 a=    4 mw=0 aluout=0006
+ 320ns pc=00a ir=0014 mo=0006 sw=0000 a=    6 mw=0 aluout=0006
+ 325ns pc=00c ir=1016 mo=0004 sw=0000 a=    6 mw=0 aluout=000a
+ 330ns pc=00c ir=1016 mo=0004 sw=0000 a=   10 mw=0 aluout=000e
+ 335ns pc=00e ir=3014 mo=000a sw=0000 a=   10 mw=1 aluout=0000
+ 345ns pc=010 ir=2000 mo=0016 sw=0000 a=   10 mw=0 aluout=0000
+ 355ns pc=000 ir=0016 mo=0004 sw=0000 a=   10 mw=0 aluout=0004
+ 360ns pc=000 ir=0016 mo=0004 sw=0000 a=    4 mw=0 aluout=0004
+ 365ns pc=002 ir=401a mo=000a sw=0000 a=    4 mw=0 aluout=0000
+ 375ns pc=004 ir=5012 mo=2012 sw=0000 a=    4 mw=0 aluout=0000
+ 385ns pc=006 ir=1018 mo=0001 sw=0000 a=    4 mw=0 aluout=0005
+ 390ns pc=006 ir=1018 mo=0001 sw=0000 a=    5 mw=0 aluout=0006
+ 395ns pc=008 ir=3016 mo=0005 sw=0000 a=    5 mw=1 aluout=0000
+ 405ns pc=00a ir=0014 mo=000a sw=0000 a=    5 mw=0 aluout=000a
+ 410ns pc=00a ir=0014 mo=000a sw=0000 a=   10 mw=0 aluout=000a
+ 415ns pc=00c ir=1016 mo=0005 sw=0000 a=   10 mw=0 aluout=000f
+ 420ns pc=00c ir=1016 mo=0005 sw=0000 a=   15 mw=0 aluout=0014
+ 425ns pc=00e ir=3014 mo=000f sw=0000 a=   15 mw=1 aluout=0000
+ 435ns pc=010 ir=2000 mo=0016 sw=0000 a=   15 mw=0 aluout=0000
+ 445ns pc=000 ir=0016 mo=0005 sw=0000 a=   15 mw=0 aluout=0005
+ 450ns pc=000 ir=0016 mo=0005 sw=0000 a=    5 mw=0 aluout=0005
+ 455ns pc=002 ir=401a mo=000a sw=0000 a=    5 mw=0 aluout=0000
+ 465ns pc=004 ir=5012 mo=2012 sw=0000 a=    5 mw=0 aluout=0000
+ 475ns pc=006 ir=1018 mo=0001 sw=0000 a=    5 mw=0 aluout=0006
+ 480ns pc=006 ir=1018 mo=0001 sw=0000 a=    6 mw=0 aluout=0007
+ 485ns pc=008 ir=3016 mo=0006 sw=0000 a=    6 mw=1 aluout=0000
+ 495ns pc=00a ir=0014 mo=000f sw=0000 a=    6 mw=0 aluout=000f
+ 500ns pc=00a ir=0014 mo=000f sw=0000 a=   15 mw=0 aluout=000f
+ 505ns pc=00c ir=1016 mo=0006 sw=0000 a=   15 mw=0 aluout=0015
+ 510ns pc=00c ir=1016 mo=0006 sw=0000 a=   21 mw=0 aluout=001b
+ 515ns pc=00e ir=3014 mo=0015 sw=0000 a=   21 mw=1 aluout=0000
+ 525ns pc=010 ir=2000 mo=0016 sw=0000 a=   21 mw=0 aluout=0000
+ 535ns pc=000 ir=0016 mo=0006 sw=0000 a=   21 mw=0 aluout=0006
+ 540ns pc=000 ir=0016 mo=0006 sw=0000 a=    6 mw=0 aluout=0006
+ 545ns pc=002 ir=401a mo=000a sw=0000 a=    6 mw=0 aluout=0000
+ 555ns pc=004 ir=5012 mo=2012 sw=0000 a=    6 mw=0 aluout=0000
+ 565ns pc=006 ir=1018 mo=0001 sw=0000 a=    6 mw=0 aluout=0007
+ 570ns pc=006 ir=1018 mo=0001 sw=0000 a=    7 mw=0 aluout=0008
+ 575ns pc=008 ir=3016 mo=0007 sw=0000 a=    7 mw=1 aluout=0000
+ 585ns pc=00a ir=0014 mo=0015 sw=0000 a=    7 mw=0 aluout=0015
+ 590ns pc=00a ir=0014 mo=0015 sw=0000 a=   21 mw=0 aluout=0015
+ 595ns pc=00c ir=1016 mo=0007 sw=0000 a=   21 mw=0 aluout=001c
+ 600ns pc=00c ir=1016 mo=0007 sw=0000 a=   28 mw=0 aluout=0023
+ 605ns pc=00e ir=3014 mo=001c sw=0000 a=   28 mw=1 aluout=0000
+ 615ns pc=010 ir=2000 mo=0016 sw=0000 a=   28 mw=0 aluout=0000
+ 625ns pc=000 ir=0016 mo=0007 sw=0000 a=   28 mw=0 aluout=0007
+ 630ns pc=000 ir=0016 mo=0007 sw=0000 a=    7 mw=0 aluout=0007
+ 635ns pc=002 ir=401a mo=000a sw=0000 a=    7 mw=0 aluout=0000
+ 645ns pc=004 ir=5012 mo=2012 sw=0000 a=    7 mw=0 aluout=0000
+ 655ns pc=006 ir=1018 mo=0001 sw=0000 a=    7 mw=0 aluout=0008
+ 660ns pc=006 ir=1018 mo=0001 sw=0000 a=    8 mw=0 aluout=0009
+ 665ns pc=008 ir=3016 mo=0008 sw=0000 a=    8 mw=1 aluout=0000
+ 675ns pc=00a ir=0014 mo=001c sw=0000 a=    8 mw=0 aluout=001c
+ 680ns pc=00a ir=0014 mo=001c sw=0000 a=   28 mw=0 aluout=001c
+ 685ns pc=00c ir=1016 mo=0008 sw=0000 a=   28 mw=0 aluout=0024
+ 690ns pc=00c ir=1016 mo=0008 sw=0000 a=   36 mw=0 aluout=002c
+ 695ns pc=00e ir=3014 mo=0024 sw=0000 a=   36 mw=1 aluout=0000
+ 705ns pc=010 ir=2000 mo=0016 sw=0000 a=   36 mw=0 aluout=0000
+ 715ns pc=000 ir=0016 mo=0008 sw=0000 a=   36 mw=0 aluout=0008
+ 720ns pc=000 ir=0016 mo=0008 sw=0000 a=    8 mw=0 aluout=0008
+ 725ns pc=002 ir=401a mo=000a sw=0000 a=    8 mw=0 aluout=0000
+ 735ns pc=004 ir=5012 mo=2012 sw=0000 a=    8 mw=0 aluout=0000
+ 745ns pc=006 ir=1018 mo=0001 sw=0000 a=    8 mw=0 aluout=0009
+ 750ns pc=006 ir=1018 mo=0001 sw=0000 a=    9 mw=0 aluout=000a
+ 755ns pc=008 ir=3016 mo=0009 sw=0000 a=    9 mw=1 aluout=0000
+ 765ns pc=00a ir=0014 mo=0024 sw=0000 a=    9 mw=0 aluout=0024
+ 770ns pc=00a ir=0014 mo=0024 sw=0000 a=   36 mw=0 aluout=0024
+ 775ns pc=00c ir=1016 mo=0009 sw=0000 a=   36 mw=0 aluout=002d
+ 780ns pc=00c ir=1016 mo=0009 sw=0000 a=   45 mw=0 aluout=0036
+ 785ns pc=00e ir=3014 mo=002d sw=0000 a=   45 mw=1 aluout=0000
+ 795ns pc=010 ir=2000 mo=0016 sw=0000 a=   45 mw=0 aluout=0000
+ 805ns pc=000 ir=0016 mo=0009 sw=0000 a=   45 mw=0 aluout=0009
+ 810ns pc=000 ir=0016 mo=0009 sw=0000 a=    9 mw=0 aluout=0009
+ 815ns pc=002 ir=401a mo=000a sw=0000 a=    9 mw=0 aluout=0000
+ 825ns pc=004 ir=5012 mo=2012 sw=0000 a=    9 mw=0 aluout=0000
+ 835ns pc=006 ir=1018 mo=0001 sw=0000 a=    9 mw=0 aluout=000a
+ 840ns pc=006 ir=1018 mo=0001 sw=0000 a=   10 mw=0 aluout=000b
+ 845ns pc=008 ir=3016 mo=000a sw=0000 a=   10 mw=1 aluout=0000
+ 855ns pc=00a ir=0014 mo=002d sw=0000 a=   10 mw=0 aluout=002d
+ 860ns pc=00a ir=0014 mo=002d sw=0000 a=   45 mw=0 aluout=002d
+ 865ns pc=00c ir=1016 mo=000a sw=0000 a=   45 mw=0 aluout=0037
+ 870ns pc=00c ir=1016 mo=000a sw=0000 a=   55 mw=0 aluout=0041
+ 875ns pc=00e ir=3014 mo=0037 sw=0000 a=   55 mw=1 aluout=0000
+ 885ns pc=010 ir=2000 mo=0016 sw=0000 a=   55 mw=0 aluout=0000
+ 895ns pc=000 ir=0016 mo=000a sw=0000 a=   55 mw=0 aluout=000a
+ 900ns pc=000 ir=0016 mo=000a sw=0000 a=   10 mw=0 aluout=000a
+ 905ns pc=002 ir=401a mo=000a sw=0000 a=   10 mw=0 aluout=4000
+ 910ns pc=002 ir=401a mo=000a sw=4000 a=   10 mw=0 aluout=4000
+ 915ns pc=004 ir=5012 mo=2012 sw=4000 a=   10 mw=0 aluout=0000
+ 925ns pc=012 ir=2012 mo=2012 sw=4000 a=   10 mw=0 aluout=0000</code></pre>
+<p>您可以清楚的看到，該程式在 870ns 時計算出了總合 SUM=55 的結果，這代表 mcu0bm.v 的設計完成了計算 1+...+10 的功能。</p>
+<h3 id="結語"><a href="#結語">結語</a></h3>
+<p>在上述實作中，採用區塊式設計的 mcu0bm.v 總共有 98 行，比起同樣功能的流程式設計 mcu0m.v 的 51 行多了將近一倍，而且程式的設計難度感覺高了不少，但是我們可以很清楚的掌握到整個設計的硬體結構，這是採用流程式設計所難以確定的。</p>
+<p>當然、由於筆者是「程式人員」，並非硬體設計人員，因此比較喜歡採用流程式的設計方式。不過採用了區塊式設計法設計出 mcu0bm.v 之後，也逐漸開始能理解這種「硬體導向」的設計方式，這大概是我在撰寫本程式時最大的收穫了。</p>
+</div>
+<div id="footer">
+<a href="https://www.facebook.com/groups/programmerMagazine/">程式人雜誌</a> ，採用 <a href="http://creativecommons.org/licenses/by-sa/3.0/tw/ ">創作共用：姓名標示、相同方式分享</a> 授權，歡迎加入 <a href="https://www.facebook.com/groups/programmerMagazine/">雜誌社團</a>
+</div>
+</body>
+</html>

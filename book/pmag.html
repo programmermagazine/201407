@@ -1,0 +1,1371 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <meta name="author" content="2014 年 7 月號" />
+  <title>程式人雜誌</title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" href="../css/pmag.css" type="text/css" />
+</head>
+<body>
+<div id="header_wrap">
+   <h1><a href="https://www.facebook.com/groups/programmerMagazine">程式人雜誌</a> <sub> --  <a href="https://dl.dropbox.com/u/101584453/pmag/201403/htm/home.html">2014 年 7 月號</a> (開放公益出版品)</sub></h1>
+</div>
+<div id="content">
+<div id="header">
+<h1 class="title"><a href="https://www.facebook.com/groups/programmerMagazine/">程式人雜誌</a></h1>
+<h2 class="author">2014 年 7 月號</h2>
+<h3 class="date">本期焦點：電腦下棋</h3>
+</div>
+<div id="TOC">
+<ul>
+<li><a href="#前言">前言</a><ul>
+<li><a href="#編輯小語">編輯小語</a></li>
+<li><a href="#授權聲明">授權聲明</a></li>
+</ul></li>
+<li><a href="#本期焦點">本期焦點</a><ul>
+<li><a href="#電腦下棋簡介">電腦下棋簡介</a></li>
+<li><a href="#五子棋程式----以-javascriptnode.js-實作-作者陳鍾誠">五子棋程式 -- 以 JavaScript+Node.js 實作 (作者：陳鍾誠)</a></li>
+<li><a href="#電腦下棋的關鍵-min-max-對局搜尋與-alpha-beta-修剪算法">電腦下棋的關鍵： Min-Max 對局搜尋與 Alpha-Beta 修剪算法</a></li>
+</ul></li>
+<li><a href="#程式與科學">程式與科學</a><ul>
+<li><a href="#eugene-goostman-程式真的通過了圖靈測試嗎-作者陳鍾誠">Eugene Goostman 程式真的通過了圖靈測試嗎？ (作者：陳鍾誠)</a></li>
+</ul></li>
+<li><a href="#程式人文集">程式人文集</a><ul>
+<li><a href="#從-arduino-到-avr-晶片2----interrupts-中斷處理-作者cooper-maa">從 Arduino 到 AVR 晶片(2) -- Interrupts 中斷處理 (作者：Cooper Maa)</a></li>
+<li><a href="#對數-logarithm-作者bridan">對數 (logarithm) (作者：Bridan)</a></li>
+<li><a href="#phonegap-google-map-作者廖憲得-0xde">[PhoneGap] Google Map (作者：廖憲得 0xde)</a></li>
+<li><a href="#開放電腦計畫-12-使用區塊式方法設計-mcu0-的-verilog-程式-作者陳鍾誠">開放電腦計畫 (12) – 使用區塊式方法設計 MCU0 的 Verilog 程式 (作者：陳鍾誠)</a></li>
+</ul></li>
+<li><a href="#雜誌訊息">雜誌訊息</a><ul>
+<li><a href="#讀者訂閱">讀者訂閱</a></li>
+<li><a href="#投稿須知">投稿須知</a></li>
+<li><a href="#參與編輯">參與編輯</a></li>
+<li><a href="#公益資訊">公益資訊</a></li>
+</ul></li>
+</ul>
+</div>
+<h1 id="前言"><a href="#前言">前言</a></h1>
+<h2 id="編輯小語"><a href="#編輯小語">編輯小語</a></h2>
+<p>在本期的「程式人雜誌」中，聚焦的主題是「電腦下棋」，除了探討電腦下棋的歷史、Min-Max 對局搜尋法與 Alpha-Beta Cut 等修剪法等理論之外，我們還設計了一個只採用盤面評估函數，沒有採用任何搜尋法的五子棋實作，希望能以程式人的角度清楚的說明「電腦下棋」程式的原理。</p>
+<p>在程式與科學裏，我們對最近網路上一則宣稱「圖靈測試」已經被通過的訊息，進行了深入的探討。透過這個探討，也能順便理解「不正確的科學傳播」是如何造成的，並且回顧一下何謂圖靈測試。</p>
+<p>另外、還有 Arduino, GoogleMap API, 對數的電腦計算方法等，還有在「開放電腦計畫」中我們採用「硬體導向」的方式重新設計了 MCU0 微控制器的迷你版等內容，希望您會喜歡這期的「程式人雜誌」！</p>
+<p>---- （程式人雜誌編輯 - 陳鍾誠）</p>
+<h2 id="授權聲明"><a href="#授權聲明">授權聲明</a></h2>
+<p>本雜誌許多資料修改自維基百科，採用 創作共用：<a href="http://creativecommons.org/licenses/by-sa/3.0/tw/">姓名標示、相同方式分享</a> 授權，若您想要修改本書產生衍生著作時，至少應該遵守下列授權條件：</p>
+<ol style="list-style-type: decimal">
+<li>標示原作者姓名 (包含該文章作者，若有來自維基百科的部份也請一併標示)。</li>
+<li>採用 創作共用：<a href="http://creativecommons.org/licenses/by-sa/3.0/tw/">姓名標示、相同方式分享</a> 的方式公開衍生著作。</li>
+</ol>
+<p>另外、當本雜誌中有文章或素材並非採用 <a href="http://creativecommons.org/licenses/by-sa/3.0/tw/">姓名標示、相同方式分享</a> 時，將會在該文章或素材後面標示其授權，此時該文章將以該標示的方式授權釋出，請修改者注意這些授權標示，以避免產生侵權糾紛。</p>
+<p>例如有些文章可能不希望被作為「商業性使用」，此時就可能會採用創作共用：<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/tw/">姓名標示、非商業性、相同方式分享</a> 的授權，此時您就不應當將該文章用於商業用途上。</p>
+<p>最後、懇請勿移除公益捐贈的相關描述，以便讓愛心得以持續散播！</p>
+<h1 id="本期焦點"><a href="#本期焦點">本期焦點</a></h1>
+<h2 id="電腦下棋簡介"><a href="#電腦下棋簡介">電腦下棋簡介</a></h2>
+<p>自從有了電腦之後，人們就一直想讓電腦「學會」下棋的能力。事實上、遠在 1952 年，那時的電腦雖然還不具備下棋的能力，但是資訊領域的理論派大師圖靈 (Alan Turing) 就已經在構思如何寫「電腦下棋」的程式了，以下是節錄自維基百科的一段描述：</p>
+<blockquote>
+<p>1952年，圖靈寫了一個西洋棋程式。可是，當時沒有一台電腦有足夠的運算能力去執行這個程式，他就模仿電腦，每走一步要用半小時。他與一位同事下了一盤，結果程式輸了。</p>
+<p>後來美國新墨西哥州洛斯阿拉莫斯國家實驗室的研究群根據圖靈的理論，在ENIAC上設計出世界上第一個電腦程式的象棋－洛斯阿拉莫斯象棋。</p>
+</blockquote>
+<p>世界上有很多種棋類遊戲，對於台灣人而言，最常下的幾種棋類，大至上包含「圍棋、象棋、五子棋、西洋棋」等等。</p>
+<p>圍棋的英文名稱為 GO，起源於中國，推測起源時間為大約公元前6世紀。傳說堯的兒子丹朱頑劣，堯發明圍棋以教育丹朱，陶冶其性情。目前圍棋的最早可靠記載見於春秋時期的《左傳》，戰國時期的弈秋是見於史籍的第一位棋手，最早的圍棋文物可以追溯到戰國時期。漢朝時棋盤為17路，南北朝時候，棋盤定型為現在的19道棋盤，傳入朝鮮半島，並且出現了評定棋手水平的圍棋九品制。圍棋逐漸成為中國古代知識階層修身養性的一項必修課目，為「琴棋書畫」四藝之一。</p>
+<p>圍棋在公元7世紀傳入日本，很快就流行於宮廷和貴族之中。戰國末期，豐臣秀吉設立棋所。德川幕府時代，出現了在天皇或將軍面前對弈的「御城棋」，日本圍棋逐漸興盛，出現了本因坊、安井、井上、林等圍棋世家。其中坊門尤其人才輩出，先後出現了道策、丈和、秀和、秀策、秀甫、秀榮等傑出棋士。日本圍棋由於廢除了中國古代圍棋的座子制（古代中國圍棋是放四個座子，就是兩黑兩白放在對角星的位置上，雙方在這個基礎上開始布局），布局理論得以極大發展。</p>
+<p>明治維新以後，棋手失去幕府支援，開始謀求新的謀生手段，導致了新聞棋戰和現代段位制的出現，並創立了全國性的日本棋院。昭和時代，吳清源和木谷實共同掀起了「新布局」的潮流，開始了現代圍棋的時代。其後日本棋界一流棋手輩出，如坂田榮男，藤澤秀行，高川格，及後來的大竹英雄，武宮正樹，小林光一，石田芳夫等。</p>
+<div class="figure">
+<img src="../img/ChineseChess.jpg" />
+</div>
+<p>五子棋的英文名稱為 GOMOKU，在日本平安時代就有，是日本人頗受歡迎的棋類。自1899年日本棋士黒岩涙香證明了原始規則的五子棋先下必勝後，五子棋邁入一條不斷改良的道路，經過數十年的修改、驗證、再修改，最終發展出加入禁手的五子棋，並經過公開徵名，稱為連珠（RENJU），因此規則在日本成型，又稱為日式規則或連珠規則。</p>
+<p>西洋棋的英文就是 chess，又稱歐洲象棋或國際象棋，一般被認爲源自一種印度的遊戲——恰圖蘭卡，7世紀時流傳至波斯成為波斯象棋。穆斯林統治波斯後，它被帶到伊斯蘭的國家。九世紀傳入南歐，10世紀時傳到西班牙，11世紀傳到英國。15世紀末，現代西洋棋的規則逐漸成形。現代的玩法與19世紀時的大致相同。由於流傳已久，因此在各地與各時期產生不少的西洋棋變體規則。</p>
+<div class="figure">
+<img src="../img/EuropeanChess.jpg" />
+</div>
+<p>相信大部分的人對以上棋類都相當熟悉，也都知曉這些棋類的遊戲規則了，現在、就讓我們大致介紹一下如何撰寫「電腦下棋」的程式好了。</p>
+<p>要寫下棋程式，大致有三個關鍵技巧，第一個是盤面的表達，第二個是評估函數，第三個是搜尋技巧。</p>
+<ul>
+<li>盤面表達：通常我們可以用一個陣列代表盤面。舉例而言、在支援 Unicode 的系統中，我們可以用字元陣列代表棋盤，對於圍棋或五子棋而言，我們可以用 O 代表白子、 X 代表黑子，然後用空白字元代表該位置還沒有任何子。同樣的、我們可以用中文字的「將士象車馬砲卒」與「帥仕相俥傌炮兵」來代表象棋的子，對於西洋棋也可以如法炮製，只要對每個棋子都取一個中文名字或代號就行了。</li>
+<li>評估函數：接著我們可以寫一個函數來評估某個盤面的分數，舉例而言、對於五子棋而言，我方連五子得 100 分，對方連五子則扣 100 分，我方連四子得 30 分，對方連四子則扣 30 分， ......，我方連兩子得 2 分，對方連兩子則扣兩分。而對象棋而言，則可以對每一子的重要性計分，例如將算 100 分，車算 50 分，砲算 30 分等等。</li>
+<li>搜尋策略：對於比較複雜的棋類，我們通常需要事先設想後面好幾步的情況，能夠想得越周全且越遠的人，通常就會越厲害。電腦下棋也是如此，由於現在電腦的速度非常快，因此往往可以利用 Min-Max 演算法搜尋兩三層，甚至到五六層。而且、只要加上 Alpha-Beta Cut 修剪法，有時甚至可以搜尋到十幾層，這樣的能力往往可以超過人類，因此現在電腦在「象棋、西洋棋、五子棋」上的棋力通常很強，即使職業的棋手也未必能夠打贏電腦。(不過圍棋目前還是人類較強，電腦還沒辦法下贏職業棋手)。</li>
+</ul>
+<p>在 1997 年的時候，IBM 曾經用他的「深藍」(Deep Blue) 電腦與當時的世界西洋棋王「卡斯巴羅夫」公開對戰，結果「卡斯巴羅夫」在第一盤勝利之後，卻連續輸了兩盤，於是敗給了「深藍電腦」。雖然這場棋賽引起了一些爭議，但是電腦在西洋棋上的棋力，應該已經確定不亞於職業棋手，甚至是有過之而無不及了。</p>
+<p>我們將在以下的幾篇文章中，進一步討論電腦下棋的方法，並且實作出一個「五子棋」的「電腦自動下棋」程式。</p>
+<h3 id="參考文獻"><a href="#參考文獻">參考文獻</a></h3>
+<ul>
+<li>Wikipedia:<a href="http://en.wikipedia.org/wiki/Computer_chess">Computer chess</a></li>
+<li>維基百科:<a href="http://zh.wikipedia.org/wiki/%E7%94%B5%E8%84%91%E8%B1%A1%E6%A3%8B">電腦象棋</a></li>
+<li>Wikipedia:<a href="http://en.wikipedia.org/wiki/Deep_Blue_(chess_computer)">Deep Blue</a></li>
+<li>維基百科:<a href="http://zh.wikipedia.org/wiki/%E6%B7%B1%E8%97%8D_(%E9%9B%BB%E8%85%A6)">深藍</a></li>
+<li>維基百科:<a href="http://zh.wikipedia.org/wiki/%E5%9C%8B%E9%9A%9B%E8%B1%A1%E6%A3%8B">西洋棋</a></li>
+<li>維基百科:<a href="http://zh.wikipedia.org/zh-tw/%E5%9B%B4%E6%A3%8B">圍棋</a></li>
+<li><a href="http://chessprogramming.wikispaces.com/Learning">http://chessprogramming.wikispaces.com/Learning</a></li>
+</ul>
+<p>【本文由陳鍾誠取材並修改自 <a href="http://zh.wikipedia.org/">維基百科</a>，採用創作共用的 <a href="http://creativecommons.org/licenses/by-sa/3.0/tw/">姓名標示、相同方式分享</a> 授權】</p>
+<h2 id="五子棋程式----以-javascriptnode.js-實作-作者陳鍾誠"><a href="#五子棋程式----以-javascriptnode.js-實作-作者陳鍾誠">五子棋程式 -- 以 JavaScript+Node.js 實作 (作者：陳鍾誠)</a></h2>
+<h3 id="簡介"><a href="#簡介">簡介</a></h3>
+<div class="figure">
+<img src="../img/chess.jpg" alt="圖、五子棋程式的一個對局畫面" /><p class="caption">圖、五子棋程式的一個對局畫面</p>
+</div>
+<h3 id="程式實作"><a href="#程式實作">程式實作</a></h3>
+<p>檔案：chess.js</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="co">// 五子棋遊戲，單機命令列版</span>
+<span class="co">//   人對人下：node chess P2P</span>
+<span class="co">//   人對電腦：node chess P2C</span>
+<span class="co">// 作者：陳鍾誠</span>
+<span class="kw">var</span> util = <span class="fu">require</span>(<span class="st">&quot;util&quot;</span>);
+<span class="kw">var</span> log = <span class="ot">console</span>.<span class="fu">log</span>;
+<span class="kw">var</span> r = <span class="fu">require</span>(<span class="st">&#39;readline&#39;</span>).<span class="fu">createInterface</span>(<span class="ot">process</span>.<span class="fu">stdin</span>, <span class="ot">process</span>.<span class="fu">stdout</span>);
+
+<span class="co">// 印出訊息，並取得輸入。</span>
+<span class="kw">var</span> prompt = <span class="kw">function</span>(turn) {
+  <span class="kw">var</span> msg = <span class="fu">format</span>(<span class="st">&#39;將 %s 下在 :    &#39;</span>, turn);
+  <span class="ot">r</span>.<span class="fu">setPrompt</span>(msg);
+  <span class="ot">r</span>.<span class="fu">prompt</span>();
+}
+
+<span class="kw">var</span> format = <span class="kw">function</span>() { <span class="co">// 字串格式化 </span>
+  <span class="kw">return</span> <span class="ot">util</span>.<span class="ot">format</span>.<span class="fu">apply</span>(<span class="kw">null</span>, arguments);
+}
+
+<span class="co">// 棋盤物件</span>
+<span class="kw">var</span> Board = <span class="kw">function</span>() {
+  <span class="kw">this</span>.<span class="fu">m</span> = [];
+  <span class="kw">for</span> (<span class="kw">var</span> r=<span class="dv">0</span>; r&lt;<span class="dv">16</span>; r++) {
+    <span class="kw">this</span>.<span class="fu">m</span>[r] = [];
+    <span class="kw">for</span> (<span class="kw">var</span> c=<span class="dv">0</span>; c&lt;<span class="dv">16</span>; c++)
+      <span class="kw">this</span>.<span class="fu">m</span>[r][c] = <span class="st">&#39;-&#39;</span>;
+  }
+}
+
+<span class="co">// 將棋盤格式化成字串</span>
+<span class="ot">Board</span>.<span class="ot">prototype</span>.<span class="fu">toString</span> = <span class="kw">function</span>() {
+  <span class="kw">var</span> str = <span class="st">&quot;  0 1 2 3 4 5 6 7 8 9 a b c d e f</span><span class="ch">\n</span><span class="st">&quot;</span>;
+  <span class="kw">for</span> (<span class="kw">var</span> r=<span class="dv">0</span>; r&lt;<span class="dv">16</span>; r++) {
+    str += <span class="ot">r</span>.<span class="fu">toString</span>(<span class="dv">16</span>)+<span class="st">&quot; &quot;</span>+<span class="kw">this</span>.<span class="fu">m</span>[r].<span class="fu">join</span>(<span class="st">&quot; &quot;</span>)+<span class="st">&quot; &quot;</span>+<span class="ot">r</span>.<span class="fu">toString</span>(<span class="dv">16</span>)+<span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>;
+  }
+  str += <span class="st">&quot;  0 1 2 3 4 5 6 7 8 9 a b c d e f</span><span class="ch">\n</span><span class="st">&quot;</span>;
+  <span class="kw">return</span> str;
+}
+
+<span class="co">// 顯示棋盤</span>
+<span class="ot">Board</span>.<span class="ot">prototype</span>.<span class="fu">show</span> = <span class="kw">function</span>() {
+  <span class="fu">log</span>(<span class="kw">this</span>.<span class="fu">toString</span>());
+}
+
+<span class="co">// 以下為遊戲相關資料與函數</span>
+<span class="co">// var zero = [ 0, 0, 0, 0, 0];</span>
+<span class="co">// var inc  = [-2,-1, 0, 1, 2];</span>
+<span class="co">// var dec  = [ 2, 1, 0,-1,-2];</span>
+<span class="kw">var</span> z9   = [ <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>];
+<span class="kw">var</span> i9   = [-<span class="dv">4</span>,-<span class="dv">3</span>,-<span class="dv">2</span>,-<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>];
+<span class="kw">var</span> d9   = [ <span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">0</span>,-<span class="dv">1</span>,-<span class="dv">2</span>,-<span class="dv">3</span>,-<span class="dv">4</span>];
+<span class="kw">var</span> z5   = [ <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>];
+<span class="kw">var</span> i2   = <span class="ot">i9</span>.<span class="fu">slice</span>(<span class="dv">2</span>,-<span class="dv">2</span>);
+<span class="kw">var</span> d2   = <span class="ot">d9</span>.<span class="fu">slice</span>(<span class="dv">2</span>,-<span class="dv">2</span>);
+
+<span class="co">// 檢查在 (r, c) 這一格，規則樣式 (dr, dc) 是否被滿足</span>
+<span class="co">// dr, dc 的組合可用來代表「垂直 | , 水平 - , 下斜 \ , 上斜 /」。</span>
+<span class="kw">var</span> patternCheck=<span class="kw">function</span>(board, turn, r, c, dr, dc) {
+  <span class="kw">for</span> (<span class="kw">var</span> i = <span class="dv">0</span>; i &lt; <span class="ot">dr</span>.<span class="fu">length</span>; i++) {
+    <span class="kw">var</span> tr = <span class="ot">Math</span>.<span class="fu">round</span>(r+dr[i]);
+    <span class="kw">var</span> tc = <span class="ot">Math</span>.<span class="fu">round</span>(c+dc[i]);
+    <span class="kw">if</span> (tr&lt;<span class="dv">0</span> ||tr &gt; <span class="dv">15</span> || tc&lt;<span class="dv">0</span> || tc&gt;<span class="dv">15</span>)
+      <span class="kw">return</span> <span class="kw">false</span>;
+    <span class="kw">var</span> v = <span class="ot">board</span>.<span class="fu">m</span>[tr][tc];
+    <span class="kw">if</span> (v != turn) <span class="kw">return</span> <span class="kw">false</span>;
+  }
+  <span class="kw">return</span> <span class="kw">true</span>;
+}
+
+<span class="co">// 檢查是否下 turn 這個子的人贏了。</span>
+<span class="kw">var</span> winCheck = <span class="kw">function</span>(board, turn) {
+  <span class="kw">var</span> win = <span class="kw">false</span>;
+  <span class="kw">for</span> (<span class="kw">var</span> r=<span class="dv">0</span>; r&lt;<span class="dv">16</span>; r++) {
+    <span class="kw">for</span> (<span class="kw">var</span> c=<span class="dv">0</span>; c&lt;<span class="dv">16</span>; c++) {
+      <span class="kw">if</span> (<span class="fu">patternCheck</span>(board, turn, r, c, z5, i2)) <span class="co">// 垂直 | ;</span>
+        win = <span class="kw">true</span>;
+      <span class="kw">if</span> (<span class="fu">patternCheck</span>(board, turn, r, c, i2, z5)) <span class="co">// 水平 - ;</span>
+        win = <span class="kw">true</span>;
+      <span class="kw">if</span> (<span class="fu">patternCheck</span>(board, turn, r, c, i2, i2)) <span class="co">// 下斜 \ ;</span>
+        win = <span class="kw">true</span>;
+      <span class="kw">if</span> (<span class="fu">patternCheck</span>(board, turn, r, c, i2, d2)) <span class="co">// 上斜 / ;</span>
+        win = <span class="kw">true</span>;
+    }
+  }
+  <span class="kw">if</span> (win) {
+    <span class="fu">log</span>(<span class="st">&quot;%s 贏了！&quot;</span>, turn);  <span class="co">// 如果贏了就印出贏了</span>
+    <span class="ot">process</span>.<span class="fu">exit</span>(<span class="dv">0</span>); <span class="co">// 然後離開。</span>
+  }
+  <span class="kw">return</span> win;
+}
+
+<span class="kw">var</span> peopleTurn = <span class="kw">function</span>(board, turn, line) {
+  <span class="kw">var</span> r = <span class="fu">parseInt</span>(line[<span class="dv">0</span>], <span class="dv">16</span>); <span class="co">// 取得下子的列 r (row)</span>
+  <span class="kw">var</span> c = <span class="fu">parseInt</span>(line[<span class="dv">1</span>], <span class="dv">16</span>); <span class="co">// 取得下子的行 c (column)</span>
+  <span class="kw">if</span> (r&lt;<span class="dv">0</span> || r&gt;<span class="dv">15</span> || c&lt;<span class="dv">0</span> || c&gt;<span class="dv">15</span>) <span class="co">// 檢查是否超出範圍</span>
+    <span class="kw">throw</span> <span class="st">&quot;(row, col) 超出範圍!&quot;</span>; <span class="co">// 若超出範圍就丟出例外，下一輪重新輸入。</span>
+  <span class="kw">if</span> (<span class="ot">board</span>.<span class="fu">m</span>[r][c] != <span class="st">&#39;-&#39;</span>) <span class="co">// 檢查該位置是否已被佔據</span>
+    <span class="kw">throw</span> <span class="fu">format</span>(<span class="st">&quot;(%s%s) 已經被佔領了!&quot;</span>, line[<span class="dv">0</span>], line[<span class="dv">1</span>]); <span class="co">// 若被佔據就丟出例外，下一輪重新輸入。</span>
+  <span class="ot">board</span>.<span class="fu">m</span>[r][c] = turn; <span class="co">// 否則、將子下在使用者輸入的 (r,c) 位置</span>
+}
+
+<span class="kw">var</span> P2P=<span class="kw">function</span>(b, turn, line) {
+  <span class="fu">peopleTurn</span>(b, turn, line);
+  <span class="ot">b</span>.<span class="fu">show</span>();         <span class="co">// 顯示棋盤現況</span>
+  <span class="fu">winCheck</span>(b, turn);
+  <span class="kw">return</span> (turn == <span class="st">&#39;o&#39;</span>)?<span class="st">&#39;x&#39;</span>:<span class="st">&#39;o&#39;</span>; <span class="co">// 換對方下了。</span>
+}
+
+<span class="kw">var</span> attackScores = [ <span class="dv">0</span>, <span class="dv">3</span>, <span class="dv">10</span>, <span class="dv">30</span>, <span class="dv">100</span>, <span class="dv">500</span> ];
+<span class="kw">var</span> guardScores  = [ <span class="dv">0</span>, <span class="dv">2</span>,  <span class="dv">9</span>, <span class="dv">25</span>,  <span class="dv">90</span>, <span class="dv">400</span> ];
+<span class="kw">var</span> attack=<span class="dv">1</span>, guard=<span class="dv">2</span>;
+
+<span class="kw">var</span> getScore = <span class="kw">function</span>(board, r, c, turn, mode) {
+  <span class="kw">var</span> score = <span class="dv">0</span>;
+  <span class="kw">var</span> mScores = (mode === attack)?attackScores:guardScores;
+  <span class="ot">board</span>.<span class="fu">m</span>[r][c] = turn;
+  <span class="kw">for</span> (<span class="kw">var</span> start = <span class="dv">0</span>; start &lt;= <span class="dv">4</span>; start++) {
+    <span class="kw">for</span> (<span class="kw">var</span> len = <span class="dv">5</span>; len &gt;= <span class="dv">1</span>; len--) {
+      <span class="kw">var</span> end = start+len;
+      <span class="kw">var</span> zero = <span class="ot">z9</span>.<span class="fu">slice</span>(start, start+len);
+      <span class="kw">var</span> inc  = <span class="ot">i9</span>.<span class="fu">slice</span>(start, start+len);
+      <span class="kw">var</span> dec  = <span class="ot">d9</span>.<span class="fu">slice</span>(start, start+len);
+      <span class="kw">if</span> (<span class="fu">patternCheck</span>(board, turn, r, c, zero, inc)) <span class="co">// 攻擊：垂直 | ;</span>
+        score += mScores[len];
+      <span class="kw">if</span> (<span class="fu">patternCheck</span>(board, turn, r, c, inc, zero)) <span class="co">// 攻擊：水平 - ;</span>
+        score += mScores[len];
+      <span class="kw">if</span> (<span class="fu">patternCheck</span>(board, turn, r, c, inc, inc)) <span class="co">// 攻擊：下斜 \ ;</span>
+        score += mScores[len];
+      <span class="kw">if</span> (<span class="fu">patternCheck</span>(board, turn, r, c, inc, dec)) <span class="co">// 攻擊：上斜 / ;</span>
+        score += mScores[len];
+    }
+  }
+  <span class="ot">board</span>.<span class="fu">m</span>[r][c] = <span class="st">&#39;-&#39;</span>;  
+  <span class="kw">return</span> score;
+}
+
+<span class="kw">var</span> computerTurn = <span class="kw">function</span>(board, turn) {
+  <span class="kw">var</span> best = { <span class="dt">r</span>:<span class="dv">0</span>, <span class="dt">c</span>:<span class="dv">0</span>, <span class="dt">score</span>:-<span class="dv">1</span> };
+  <span class="kw">for</span> (<span class="kw">var</span> r=<span class="dv">0</span>; r&lt;=<span class="dv">15</span>; r++) {
+    <span class="kw">for</span> (<span class="kw">var</span> c=<span class="dv">0</span>; c&lt;=<span class="dv">15</span>; c++) {
+      <span class="kw">if</span> (<span class="ot">board</span>.<span class="fu">m</span>[r][c] !== <span class="st">&#39;-&#39;</span>) 
+        <span class="kw">continue</span>;
+      <span class="kw">var</span> attackScore = <span class="fu">getScore</span>(board, r, c, <span class="st">&#39;x&#39;</span>, attack);  <span class="co">// 攻擊分數</span>
+      <span class="kw">var</span> guardScore  = <span class="fu">getScore</span>(board, r, c, <span class="st">&#39;o&#39;</span>, guard);   <span class="co">// 防守分數</span>
+      <span class="kw">var</span> score = attackScore+guardScore;
+      <span class="kw">if</span> (score &gt; <span class="ot">best</span>.<span class="fu">score</span>) {
+        <span class="ot">best</span>.<span class="fu">r</span> = r;
+        <span class="ot">best</span>.<span class="fu">c</span> = c;
+        <span class="ot">best</span>.<span class="fu">score</span> = score;
+      }
+    }
+  }
+  <span class="fu">log</span>(<span class="st">&quot;best=%j&quot;</span>, best);
+  <span class="ot">board</span>.<span class="fu">m</span>[<span class="ot">best</span>.<span class="fu">r</span>][<span class="ot">best</span>.<span class="fu">c</span>] = turn; <span class="co">// 否則、將子下在使用者輸入的 (r,c) 位置</span>
+}
+
+<span class="kw">var</span> P2C=<span class="kw">function</span>(b, turn, line) {
+  <span class="fu">peopleTurn</span>(b, <span class="st">&#39;o&#39;</span>, line);
+  <span class="ot">b</span>.<span class="fu">show</span>();         <span class="co">// 顯示棋盤現況</span>
+  <span class="fu">winCheck</span>(b, <span class="st">&#39;o&#39;</span>); <span class="co">// 檢查下了這子之後是否贏了！</span>
+  <span class="fu">computerTurn</span>(b, <span class="st">&#39;x&#39;</span>, line);
+  <span class="ot">b</span>.<span class="fu">show</span>();
+  <span class="fu">winCheck</span>(b, <span class="st">&#39;x&#39;</span>);
+  <span class="kw">return</span> <span class="st">&#39;o&#39;</span>;
+}
+
+<span class="kw">var</span> chess=<span class="kw">function</span>(doLine) {
+  <span class="co">// 主程式開始</span>
+  <span class="kw">var</span> b = <span class="kw">new</span> <span class="fu">Board</span>(); <span class="co">// 建立棋盤</span>
+  <span class="ot">b</span>.<span class="fu">show</span>();            <span class="co">// 顯示棋盤</span>
+  <span class="kw">var</span> turn = <span class="st">&#39;o&#39;</span>;      <span class="co">// o 先下</span>
+  <span class="fu">prompt</span>(turn);        <span class="co">// 提示要求下子訊息，並接受輸入。</span>
+  <span class="ot">r</span>.<span class="fu">on</span>(<span class="st">&#39;line&#39;</span>, <span class="kw">function</span>(line) { <span class="co">// 每當讀到一個字串時。</span>
+    <span class="kw">try</span> {
+      turn = <span class="fu">doLine</span>(b, turn, line);
+    } <span class="kw">catch</span> (err) { <span class="co">// 若有丟出例外</span>
+      <span class="fu">log</span>(err); <span class="co">// 則印出錯誤訊息。</span>
+    }
+    <span class="fu">prompt</span>(turn); <span class="co">// 提示要求下子訊息，並接受輸入。</span>
+  }).<span class="fu">on</span>(<span class="st">&#39;close&#39;</span>, <span class="kw">function</span>() { <span class="co">// 輸入結束了</span>
+    <span class="ot">process</span>.<span class="fu">exit</span>(<span class="dv">0</span>); <span class="co">// 程式結束。</span>
+  });
+}
+
+<span class="kw">if</span> (<span class="ot">process</span>.<span class="fu">argv</span>[<span class="dv">2</span>] === <span class="st">&quot;P2P&quot;</span>) <span class="co">// 人對人下</span>
+  <span class="fu">chess</span>(P2P);
+<span class="kw">else</span> <span class="kw">if</span> (<span class="ot">process</span>.<span class="fu">argv</span>[<span class="dv">2</span>] === <span class="st">&quot;P2C&quot;</span>) <span class="co">// 人對電腦下</span>
+  <span class="fu">chess</span>(P2C);
+<span class="kw">else</span> { <span class="co">// 命令下錯，提示訊息！</span>
+  <span class="fu">log</span>(<span class="st">&quot;人對人下：node chess P2P</span><span class="ch">\n</span><span class="st">人對電腦：node chess P2C&quot;</span>);
+  <span class="ot">process</span>.<span class="fu">exit</span>(<span class="dv">0</span>);
+}</code></pre>
+<h3 id="執行結果"><a href="#執行結果">執行結果</a></h3>
+<pre><code>C:\Dropbox\Public\web\ai\code\chess&gt;node chess P2C
+  0 1 2 3 4 5 6 7 8 9 a b c d e f
+0 - - - - - - - - - - - - - - - - 0
+1 - - - - - - - - - - - - - - - - 1
+2 - - - - - - - - - - - - - - - - 2
+3 - - - - - - - - - - - - - - - - 3
+4 - - - - - - - - - - - - - - - - 4
+5 - - - - - - - - - - - - - - - - 5
+6 - - - - - - - - - - - - - - - - 6
+7 - - - - - - - - - - - - - - - - 7
+8 - - - - - - - - - - - - - - - - 8
+9 - - - - - - - - - - - - - - - - 9
+a - - - - - - - - - - - - - - - - a
+b - - - - - - - - - - - - - - - - b
+c - - - - - - - - - - - - - - - - c
+d - - - - - - - - - - - - - - - - d
+e - - - - - - - - - - - - - - - - e
+f - - - - - - - - - - - - - - - - f
+  0 1 2 3 4 5 6 7 8 9 a b c d e f
+
+將 o 下在 : 66
+  0 1 2 3 4 5 6 7 8 9 a b c d e f
+0 - - - - - - - - - - - - - - - - 0
+1 - - - - - - - - - - - - - - - - 1
+2 - - - - - - - - - - - - - - - - 2
+3 - - - - - - - - - - - - - - - - 3
+4 - - - - - - - - - - - - - - - - 4
+5 - - - - - - - - - - - - - - - - 5
+6 - - - - - - o - - - - - - - - - 6
+7 - - - - - - - - - - - - - - - - 7
+8 - - - - - - - - - - - - - - - - 8
+9 - - - - - - - - - - - - - - - - 9
+a - - - - - - - - - - - - - - - - a
+b - - - - - - - - - - - - - - - - b
+c - - - - - - - - - - - - - - - - c
+d - - - - - - - - - - - - - - - - d
+e - - - - - - - - - - - - - - - - e
+f - - - - - - - - - - - - - - - - f
+  0 1 2 3 4 5 6 7 8 9 a b c d e f
+
+best={&quot;r&quot;:6,&quot;c&quot;:7,&quot;score&quot;:31}
+  0 1 2 3 4 5 6 7 8 9 a b c d e f
+0 - - - - - - - - - - - - - - - - 0
+1 - - - - - - - - - - - - - - - - 1
+2 - - - - - - - - - - - - - - - - 2
+3 - - - - - - - - - - - - - - - - 3
+4 - - - - - - - - - - - - - - - - 4
+5 - - - - - - - - - - - - - - - - 5
+6 - - - - - - o x - - - - - - - - 6
+7 - - - - - - - - - - - - - - - - 7
+8 - - - - - - - - - - - - - - - - 8
+9 - - - - - - - - - - - - - - - - 9
+a - - - - - - - - - - - - - - - - a
+b - - - - - - - - - - - - - - - - b
+c - - - - - - - - - - - - - - - - c
+d - - - - - - - - - - - - - - - - d
+e - - - - - - - - - - - - - - - - e
+f - - - - - - - - - - - - - - - - f
+  0 1 2 3 4 5 6 7 8 9 a b c d e f
+
+...
+
+best={&quot;r&quot;:6,&quot;c&quot;:3,&quot;score&quot;:144}
+  0 1 2 3 4 5 6 7 8 9 a b c d e f
+0 - - - - - - - - - - - - - - - - 0
+1 - - - - - - - - - - - - - - - - 1
+2 - - - - - - - - - - - - - - - - 2
+3 - - - - - - - - - - - - - - - - 3
+4 - - - - x - - - - - - - - - - - 4
+5 - - - - - o - - - - - - - - - - 5
+6 - - - x o o o x - - - - - - - - 6
+7 - - - - - - - o - - - - - - - - 7
+8 - - - - - - - - x - - - - - - - 8
+9 - - - - - - - - - x - - - - - - 9
+a - - - - - - - - - - - - - - - - a
+b - - - - - - - - - - - - - - - - b
+c - - - - - - - - - - - - - - - - c
+d - - - - - - - - - - - - - - - - d
+e - - - - - - - - - - - - - - - - e
+f - - - - - - - - - - - - - - - - f
+  0 1 2 3 4 5 6 7 8 9 a b c d e f
+...
+
+  0 1 2 3 4 5 6 7 8 9 a b c d e f
+0 - - - - - - - - - - - - - - - - 0
+1 - - - - - - - - - - - - - - - - 1
+2 - - - - - - - - - - - - - - - - 2
+3 - - - - - - - - - - - - - - - - 3
+4 - - - - x - - - - - - - - - - - 4
+5 - - o - - o - - - - - - - - - - 5
+6 - - o x o o o x - - - - - - - - 6
+7 - - - - x o o o - - - - - - - - 7
+8 - - - - - x - - x - - - - - - - 8
+9 - - - - - - x - - x - - - - - - 9
+a - - - - - - - x - - - - - - - - a
+b - - - - - - - - - - - - - - - - b
+c - - - - - - - - - - - - - - - - c
+d - - - - - - - - - - - - - - - - d
+e - - - - - - - - - - - - - - - - e
+f - - - - - - - - - - - - - - - - f
+  0 1 2 3 4 5 6 7 8 9 a b c d e f
+
+x 贏了！</code></pre>
+<h3 id="參考文獻-1"><a href="#參考文獻-1">參考文獻</a></h3>
+<ul>
+<li><a href="http://zh.wikipedia.org/zh-tw/%E4%BA%94%E5%AD%90%E6%A3%8B">維基百科：五子棋</a></li>
+</ul>
+<h2 id="電腦下棋的關鍵-min-max-對局搜尋與-alpha-beta-修剪算法"><a href="#電腦下棋的關鍵-min-max-對局搜尋與-alpha-beta-修剪算法">電腦下棋的關鍵： Min-Max 對局搜尋與 Alpha-Beta 修剪算法</a></h2>
+<h3 id="前言-1"><a href="#前言-1">前言</a></h3>
+<h3 id="min-max-對局搜尋法"><a href="#min-max-對局搜尋法">Min-Max 對局搜尋法</a></h3>
+<p>演算法： Min-Max 對局搜尋</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">function</span> <span class="fu">minimax</span>(node, depth, maximizingPlayer)
+    <span class="kw">if</span> depth = <span class="dv">0</span> or node is a terminal node
+        <span class="kw">return</span> the heuristic value of node
+    <span class="kw">if</span> maximizingPlayer
+        bestValue := -∞
+        <span class="kw">for</span> each child of node
+            val := <span class="fu">minimax</span>(child, depth - <span class="dv">1</span>, FALSE))
+            bestValue := <span class="fu">max</span>(bestValue, val);
+        <span class="kw">return</span> bestValue
+    <span class="kw">else</span>
+        bestValue := +∞
+        <span class="kw">for</span> each child of node
+            val := <span class="fu">minimax</span>(child, depth - <span class="dv">1</span>, TRUE))
+            bestValue := <span class="fu">min</span>(bestValue, val);
+        <span class="kw">return</span> bestValue
+
+(* Initial call <span class="kw">for</span> maximizing player *)
+<span class="fu">minimax</span>(origin, depth, TRUE)</code></pre>
+<h3 id="參考文獻-2"><a href="#參考文獻-2">參考文獻</a></h3>
+<ul>
+<li><a href="http://en.wikipedia.org/wiki/Minimax">Wikipedia:Minimax</a></li>
+<li><a href="http://en.wikipedia.org/wiki/Alpha-beta_pruning">Wikipedia:Alpha–beta pruning</a></li>
+</ul>
+<p>【本文由陳鍾誠取材並修改自 <a href="http://zh.wikipedia.org/">維基百科</a>，採用創作共用的 <a href="http://creativecommons.org/licenses/by-sa/3.0/tw/">姓名標示、相同方式分享</a> 授權】</p>
+<h1 id="程式與科學"><a href="#程式與科學">程式與科學</a></h1>
+<h2 id="eugene-goostman-程式真的通過了圖靈測試嗎-作者陳鍾誠"><a href="#eugene-goostman-程式真的通過了圖靈測試嗎-作者陳鍾誠">Eugene Goostman 程式真的通過了圖靈測試嗎？ (作者：陳鍾誠)</a></h2>
+<h3 id="前言-2"><a href="#前言-2">前言</a></h3>
+<p>2014 年 6 月 9 日，我看到 inside 網站中有人發布了一個訊息 <a href="http://share.inside.com.tw/posts/5079">「電腦首度通過圖靈測試(36kr.com)」</a>。 我的直覺反應是，這件事情勢必有假，於是一路追了下去。</p>
+<p>Inside 的訊息其實是轉貼自 36氪這個來自中國的網站， 36氪網站的文章標是 <a href="http://www.36kr.com/p/212680.html">「计算机首次通过图灵测试」</a> 。</p>
+<p>不仔細看文章的人，很可能會被誤導，認為電腦已經可以成功得欺騙人類，讓人以為他是一個真人，而且比率達到和真人一樣的水準，也就是「人類已經無法正確區分文字交談的對象到底是電腦還是人類了」。</p>
+<p>但是、這樣的想法是錯的，文章中所說的 Eugene Goostman 這個軟體其實並沒有達到「完全能欺騙人類」的水準，因為他們所說的圖靈測試，和我所認知的圖靈測試，根本就是不同的東西。</p>
+<h3 id="圖靈測試是甚麼"><a href="#圖靈測試是甚麼">圖靈測試是甚麼？</a></h3>
+<p>36氪文章中所說的 <a href="http://baike.baidu.com/view/94296.htm">「图灵测试」</a> ，其實有連結到百度百科。百度百科裏對圖靈測試的描述如下：</p>
+<blockquote>
+<p>图灵测试是测试人在与被测试者(一个人和一台机器)隔开的情况下，通过一些装置（如键盘）向被测试者随意提问。问过一些问题后，如果被测试者超过30%的答复不能使测试人确认出哪个是人、哪个是机器的回答，那么这台机器就通过了测试，并被认为具有人类智能。</p>
+</blockquote>
+<p>但是、我所認知的圖靈測試，並不是採用 30% 誤判率為基準的，而是應該達到「和人類被誤判為電腦」一樣的水準。換句話說，假如程式偽裝的和真人一樣好的話，那麼應該要符合下列的表格要求。</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">判斷者的決定</th>
+<th align="left">交談對象為人類</th>
+<th align="left">交談對象為電腦程式</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">判斷為人</td>
+<td align="left">比率為 P (正確判斷)</td>
+<td align="left">比率大於或等於為 P (欺騙成功)</td>
+</tr>
+<tr class="even">
+<td align="left">判斷為電腦</td>
+<td align="left">比率為 1-P (誤判人為電腦)</td>
+<td align="left">比率小於或等於為 1-P (欺騙失敗)</td>
+</tr>
+</tbody>
+</table>
+<p>因此、對於上述新聞中所說的，<a href="http://www.36kr.com/p/212680.html">「计算机首次通过图灵测试」</a> 這件事情，其實是採用 30% 的欺騙成功率，這是我們認為該宣稱有問題的關鍵原因。</p>
+<p>但是、為甚麼測試單位「英國雷丁大學」要採用 30% 做為圖靈測試是否通過的標準呢？我想原因應該來自於「圖靈」本人在那篇名為 「COMPUTING MACHINERY AND INTELLIGENCE 」的文章中所提到的一個預估，原文如下：</p>
+<blockquote>
+<p>I believe that in about fifty years' time it will be possible to programme computers, with a storage capacity of about 10^9, to make them play the imitation game so well that an average interrogator will not have more than 70 percent chance of making the right identification after five minutes of questioning. … I believe that at the end of the century the use of words and general educated opinion will have altered so much that one will be able to speak of machines thinking without expecting to be contradicted.</p>
+</blockquote>
+<p>在上文當中「圖靈」預估 50 年後電腦就可以讓不超過 70% 的人做正確的決定。換句話說，就是成功的欺騙過 30% 的人。於是「英國雷丁大學」就把這個預估當成圖靈測試的基準了。</p>
+<p>但是、這只是圖靈的一個預估，並不代表圖靈測試就應該定為成功的欺騙過 30% 的人啊！ (而且這也不是學術界對圖靈測試的一個共識)。</p>
+<h3 id="測試單位的英文公告"><a href="#測試單位的英文公告">測試單位的英文公告</a></h3>
+<p>36氪的 <a href="http://www.36kr.com/p/212680.html">「计算机首次通过图灵测试」</a> 一文中指出了訊息來源為「英國雷丁大學的新聞稿」，連結如下：</p>
+<ul>
+<li><a href="http://www.reading.ac.uk/news-and-events/releases/PR583836.aspx">TURING TEST SUCCESS MARKS MILESTONE IN COMPUTING HISTORY</a></li>
+</ul>
+<p>該新聞稿提到 Eugene Goostman 這個程式通過圖靈測試的語句如下：</p>
+<blockquote>
+<p>The 65 year-old iconic Turing Test was passed for the very first time by supercomputer Eugene Goostman during Turing Test 2014 held at the renowned Royal Society in London on Saturday.</p>
+</blockquote>
+<p>但新聞稿的後面有寫出測試方法的描述：</p>
+<ol style="list-style-type: decimal">
+<li>Simultaneous tests as specified by Alan Turing</li>
+<li>Each judge was involved in five parallel tests - so 10 conversations</li>
+<li>30 judges took part</li>
+<li>In total 300 conversations</li>
+<li>In each five minutes a judge was communicating with both a human and a machine</li>
+<li>Each of the five machines took part in 30 tests</li>
+<li>To ensure accuracy of results, Test was independently adjudicated by Professor John Barnden, University of Birmingham, formerly head of British AI Society</li>
+</ol>
+<p>我對這個測試方法的解讀如下：</p>
+<ol style="list-style-type: decimal">
+<li>圖靈測試：電腦程式是否能成功的透過文字交談欺騙人類，偽裝自己是個人。</li>
+<li>每個「判斷者」都會分別判斷五組「人+電腦」的配對，也就是總共進行 10 次的對話。</li>
+<li>總共有 30 位判斷者參與。</li>
+<li>總共有 30*10=300 場的交談。</li>
+<li>在五分鐘內，「判斷者」會與一組「人和機器」分別交談。</li>
+<li>五組「電腦程式」都會與 30 位「判斷者」談過一次。</li>
+<li>為了確認「判斷者」判斷結果為正確或錯誤， John Barnden 教授會監控並確認結果。</li>
+</ol>
+<h3 id="問題在哪裡"><a href="#問題在哪裡">問題在哪裡？</a></h3>
+<p>我認為「英國雷丁大學發布的新聞稿」用詞有欠妥當，主要是因為下列語句實在是太過強烈：</p>
+<blockquote>
+<p>The 65 year-old iconic Turing Test was passed for the very first time by supercomputer Eugene Goostman during Turing Test 2014 held at the renowned Royal Society in London on Saturday.</p>
+</blockquote>
+<p>雖然新聞稿後面有交代 Eugene Goostman 程式成功的欺騙過 33% 的判斷者，但是沒有看完全文的人還是很容易被誤導的。</p>
+<blockquote>
+<p>If a computer is mistaken for a human more than 30% of the time during a series of five minute keyboard conversations it passes the test. No computer has ever achieved this, until now. Eugene managed to convince 33% of the human judges (30 judges took part - see more details below) that it was human.</p>
+</blockquote>
+<p>而 36氪網站直接把 <a href="http://www.36kr.com/p/212680.html">「计算机首次通过图灵测试」</a> 拿來當標題，則是進一步的誤導了大家， 雖然 36氪有超連結指向 <a href="http://baike.baidu.com/view/94296.htm">百度的圖靈測試定義</a> ，但是這個定義顯然與一般人的認知不同，應該要強調一下才對，不應該企圖用聳動性的標題吸引目光。</p>
+<p>最後、 inside 的轉載 <a href="http://share.inside.com.tw/posts/5079">「電腦首度通過圖靈測試(36kr.com)」</a> 這篇，雖然有指出來源的 36氪網站文章，不過我想轉貼的人或許沒有仔細想過到底文章中的「通過圖靈測試」到底是甚麼意義，也沒想過這樣可能會誤導讀者，造成錯誤科學訊息的傳播問題。</p>
+<h3 id="以前的程式表現如何"><a href="#以前的程式表現如何">以前的程式表現如何？</a></h3>
+<p>事實上、能夠成功欺騙人類，讓某些人認為對方是真人的交談程式，在人工智慧的歷史上很早就出現過了。</p>
+<p>遠在 1966 年時，Joseph Weizenbaum 就曾經創造出一個稱為 ELIZA 的程式，該程式採用了非常簡單的字串比對方法，結果竟然讓不少交談者認為 ELIZA 是個真人，以下是維基百科對 Eliza 程式的描述網址。</p>
+<ul>
+<li><a href="http://en.wikipedia.org/wiki/ELIZA">http://en.wikipedia.org/wiki/ELIZA</a></li>
+</ul>
+<p>在 2013 年 8 月號的程式人雜誌當中，筆者也在文章中展示了一個自己寫的「中文版 Eliza 聊天程式」，有興趣的朋友也可以閱讀該文章順便瞭解這種程式是怎麼做的。</p>
+<ul>
+<li><a href="http://programmermagazine.github.io/201308/htm/article2.html">JavaScript (8) – 中文版 Eliza 聊天程式</a></li>
+</ul>
+<p>另外、在 2011 年時有一個稱為 <a href="http://en.wikipedia.org/wiki/Cleverbot">Cleverbot 的程式</a> 曾經創造過成功欺騙 60% 判斷者的紀錄，這個紀錄比這次比賽第一名的 Eugene Goostman 程式還要高。因此我們真的很難用「電腦首度通過圖靈測試」這樣的語句來描述這次比賽的結果，甚至這次比賽到底是否有創了什麼記錄都是很難確定的。</p>
+<p>所以、我真的覺得這樣的訊息是過於聳動了，因此特別寫了這篇文章來提醒大家，避免很多人會被這些訊息誤導。</p>
+<h3 id="我的感想"><a href="#我的感想">我的感想</a></h3>
+<p>從這個案例中，我們可以看到在網路訊息發達的今天，要能夠不被誤導，恐怕必須要有很強的判斷力與追根究柢的精神，但是在這個訊息多如牛毛的世界中，錯誤與聳動的訊息往往傳播的特別快，這恐怕是網路世界亟待解決的問題之一啊！</p>
+<p>最後、我上 <a href="http://newshelper.g0v.tw/">g0v 的新聞小幫手</a> 去檢舉了這個新聞，希望能讓誤導的情況稍微降低一下，檢舉網址如下：</p>
+<ul>
+<li><a href="http://newshelper.g0v.tw/index/log/1819">http://newshelper.g0v.tw/index/log/1819</a></li>
+</ul>
+<h3 id="參考文獻-3"><a href="#參考文獻-3">參考文獻</a></h3>
+<ul>
+<li><a href="http://en.wikipedia.org/wiki/ELIZA">http://en.wikipedia.org/wiki/ELIZA</a></li>
+<li><a href="http://programmermagazine.github.io/201308/htm/article2.html">JavaScript (8) – 中文版 Eliza 聊天程式</a></li>
+<li><a href="http://en.wikipedia.org/wiki/Cleverbot">http://en.wikipedia.org/wiki/Cleverbot</a></li>
+<li>36氪網站:「计算机首次通过图灵测试」 -- <a href="http://www.36kr.com/p/212680.html">http://www.36kr.com/p/212680.html</a></li>
+<li>百度百科：「图灵测试」 -- <a href="http://baike.baidu.com/view/94296.htm">http://baike.baidu.com/view/94296.htm</a></li>
+<li>Inside 網站：「電腦首度通過圖靈測試(36kr.com)」 -- <a href="http://share.inside.com.tw/posts/5079">http://share.inside.com.tw/posts/5079</a></li>
+<li><a href="http://www.reading.ac.uk/news-and-events/releases/PR583836.aspx">TURING TEST SUCCESS MARKS MILESTONE IN COMPUTING HISTORY</a></li>
+<li><a href="http://en.wikipedia.org/wiki/Turing_test">http://en.wikipedia.org/wiki/Turing_test</a></li>
+<li><a href="http://www.wired.com/2014/06/turing-test-not-so-fast/">http://www.wired.com/2014/06/turing-test-not-so-fast/</a></li>
+<li><a href="http://plato.stanford.edu/entries/turing-test/">http://plato.stanford.edu/entries/turing-test/</a></li>
+<li>資訊科學到底算不算是科學呢？ -- <a href="http://pansci.tw/archives/44422">http://pansci.tw/archives/44422</a></li>
+<li>COMPUTING MACHINERY AND INTELLIGENCE , By A. M. Turing -- <a href="http://www.csee.umbc.edu/courses/471/papers/turing.pdf">http://www.csee.umbc.edu/courses/471/papers/turing.pdf</a></li>
+<li>图灵测试，测的到底是什么？ -- <a href="http://www.guokr.com/article/438573/">http://www.guokr.com/article/438573/</a></li>
+</ul>
+<h1 id="程式人文集"><a href="#程式人文集">程式人文集</a></h1>
+<h2 id="從-arduino-到-avr-晶片2----interrupts-中斷處理-作者cooper-maa"><a href="#從-arduino-到-avr-晶片2----interrupts-中斷處理-作者cooper-maa">從 Arduino 到 AVR 晶片(2) -- Interrupts 中斷處理 (作者：Cooper Maa)</a></h2>
+<h3 id="什麼是-interrupts"><a href="#什麼是-interrupts">什麼是 Interrupts?</a></h3>
+<p>當你在工作的時候，突然電話鈴聲響起，於是你把手邊工作停下來、接電話、講電話，然後回來繼續剛剛工作 －－ 這就是所謂的中斷 (Interrupt)，而電話便是中斷源。</p>
+<p>在微控制器中，中斷的來源有很多，諸如 Reset, 外部中斷, Timer, USART, EEPROM, ADC 等。比如，當 Timer Overflow 時可以引發中斷，當 USART 收到資料或資料傳輸完畢時可以引發中斷…</p>
+<p>跟人一樣，在遇到中斷的時候，微控制器的 CPU 也會把手邊的工作停下來，然後跳到預設的位址 (接電話)，接著執行一段程式 (講電話)，執行完後回來繼續進行剛剛的工作。</p>
+<p>在發生中斷的時候，CPU 會老老實實的做這幾個動作：</p>
+<ol style="list-style-type: decimal">
+<li>執行當前的指令</li>
+<li>把下一個指令的位址 push 到 stack 上，停止程式的正常流程，然後</li>
+<li>跳到預設的位址，這個位址稱為中斷向量表，是由 MCU 製造商預先定義好的。 在中斷向量表中，每個中斷都有一個 entry，就看發生什麼中斷，CPU 就跳到哪個 entry。通常每個 entry 裏只是一條 JMP xxxx 的指令，會讓 CPU 輾轉跳到一段稱為中斷服務函式 (Interrupt Service Routine, ISR) 的副程式。</li>
+<li>接著執行中斷服務函式</li>
+<li>當執行完中斷服務函式後，再從 stack 上 pop 出指令的位址，並從它離開的地方繼續執行程式</li>
+</ol>
+<p>電腦比人強的地方，在於它的記憶力好，沒健忘症，當 CPU 處理完中斷後，一定會回去進行原來的工作，除非程式開發者疏忽了把 ISR 寫成跳不出來的無窮迴圈。</p>
+<h3 id="interrupt-vectors"><a href="#interrupt-vectors">Interrupt vectors</a></h3>
+<p>底下這張是 ATmega328 的中斷向量表：</p>
+<div class="figure">
+<img src="../img/arduino_inttable1.png" />
+</div>
+<div class="figure">
+<img src="../img/arduino_inttable2.png" />
+</div>
+<p>當中斷觸發時，CPU 會跳到預設的位址，例如當 ADC 轉換完成時會引發 ADC 中斷，CPU 這時就會跳到 0x002A 這個位址 (vector 22 所在的位址) 去執行指令。如前面說的，通常中斷向量表的每個 entry 裏只是一條 JMP xxxx 的指令，會讓 CPU 輾轉跳到中斷服務函式 (ISR)。</p>
+<p>底下是中斷向量表典型的設定:</p>
+<pre><code>Address Labels Code             Comments
+0x0000         jmp RESET        ; Reset Handler
+0x0002         jmp EXT_INT0     ; IRQ0 Handler
+0x0004         jmp EXT_INT1     ; IRQ1 Handler
+0x0006         jmp PCINT0       ; PCINT0 Handler
+0x0008         jmp PCINT1       ; PCINT1 Handler
+0x000A         jmp PCINT2       ; PCINT2 Handler
+0x000C         jmp WDT          ; Watchdog Timer Handler
+0x000E         jmp TIM2_COMPA   ; Timer2 Compare A Handler
+0x0010         jmp TIM2_COMPB   ; Timer2 Compare B Handler
+0x0012         jmp TIM2_OVF     ; Timer2 Overflow Handler
+0x0014         jmp TIM1_CAPT    ; Timer1 Capture Handler
+0x0016         jmp TIM1_COMPA   ; Timer1 Compare A Handler
+0x0018         jmp TIM1_COMPB   ; Timer1 Compare B Handler
+0x001A         jmp TIM1_OVF     ; Timer1 Overflow Handler
+0x001C         jmp TIM0_COMPA   ; Timer0 Compare A Handler
+0x001E         jmp TIM0_COMPB   ; Timer0 Compare B Handler
+0x0020         jmp TIM0_OVF     ; Timer0 Overflow Handler
+0x0022         jmp SPI_STC      ; SPI Transfer Complete Handler
+0x0024         jmp USART_RXC    ; USART, RX Complete Handler
+0x0026         jmp USART_UDRE   ; USART, UDR Empty Handler
+0x0028         jmp USART_TXC    ; USART, TX Complete Handler
+0x002A         jmp ADC          ; ADC Conversion Complete Handler
+0x002C         jmp EE_RDY       ; EEPROM Ready Handler
+0x002E         jmp ANA_COMP     ; Analog Comparator Handler
+0x0030         jmp TWI          ; 2-wire Serial Interface Handler
+0x0032         jmp SPM_RDY      ; Store Program Memory Ready Handler
+;
+0x0033RESET:   ldi r16, high(RAMEND); Main program start
+0x0034         out SPH,r16 ; Set Stack Pointer to top of RAM
+0x0035         ldi r16, low(RAMEND)
+0x0036         out SPL,r16
+0x0037         sei ; Enable interrupts
+0x0038         &lt;instr&gt; xxx</code></pre>
+<p>以上面的程式為例，當發生 reset 中斷時，MCU 執行的第一條指令是 jmp RESET，因此會跳到 0x0033 的位址，亦即主程式的起始位置。假如是 ADC 中斷，MCU 會先跳到中斷向量表 0x002A 的位址，之後輾轉跳到 ADC 這個中斷服務函式。</p>
+<h3 id="interrupt-service-routine-isr"><a href="#interrupt-service-routine-isr">Interrupt Service Routine (ISR)</a></h3>
+<p>在 Arduino 的程式中，要寫 ISR 是很簡單的一件事。你不需要自己設定中斷向量表，只要會使用 ISR() 這個巨集指令就可以了，例如:</p>
+<pre><code>ISR(ADC_vect)
+{
+
+// Your code here
+
+}</code></pre>
+<p>這表示這個是處理 ADC 轉換的中斷服務函式，將來當 ADC 轉換完成時會引發中斷，CPU 就會來執行這個中斷服務函式。</p>
+<p>底下這張表列出了 ATmega328 的所有中斷向量，可在 <avr/iom328p.h> 中找到</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Vector</th>
+<th align="left">說明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">INT0_vect</td>
+<td align="left">External Interrupt Request 0</td>
+</tr>
+<tr class="even">
+<td align="left">INT1_vect</td>
+<td align="left">External Interrupt Request 1</td>
+</tr>
+<tr class="odd">
+<td align="left">PCINT0_vect</td>
+<td align="left">Pin Change Interrupt Request 0</td>
+</tr>
+<tr class="even">
+<td align="left">PCINT1_vect</td>
+<td align="left">Pin Change Interrupt Request 1</td>
+</tr>
+<tr class="odd">
+<td align="left">PCINT2_vect</td>
+<td align="left">Pin Change Interrupt Request 2</td>
+</tr>
+<tr class="even">
+<td align="left">WDT_vect</td>
+<td align="left">Watchdog Time-out Interrupt</td>
+</tr>
+<tr class="odd">
+<td align="left">TIMER2_COMPA_vect</td>
+<td align="left">Timer/Counter2 Compare Match A</td>
+</tr>
+<tr class="even">
+<td align="left">TIMER2_COMPB_vect</td>
+<td align="left">Timer/Counter2 Compare Match B</td>
+</tr>
+<tr class="odd">
+<td align="left">TIMER2_OVF_vect</td>
+<td align="left">Timer/Counter2 Overflow</td>
+</tr>
+<tr class="even">
+<td align="left">TIMER1_CAPT_vect</td>
+<td align="left">Timer/Counter1 Capture Event</td>
+</tr>
+<tr class="odd">
+<td align="left">TIMER1_COMPA_vect</td>
+<td align="left">Timer/Counter1 Compare Match A</td>
+</tr>
+<tr class="even">
+<td align="left">TIMER1_COMPB_vect</td>
+<td align="left">Timer/Counter1 Compare Match B</td>
+</tr>
+<tr class="odd">
+<td align="left">TIMER1_OVF_vect</td>
+<td align="left">Timer/Counter1 Overflow</td>
+</tr>
+<tr class="even">
+<td align="left">TIMER0_COMPA_vect</td>
+<td align="left">TimerCounter0 Compare Match A</td>
+</tr>
+<tr class="odd">
+<td align="left">TIMER0_COMPB_vect</td>
+<td align="left">TimerCounter0 Compare Match B</td>
+</tr>
+<tr class="even">
+<td align="left">TIMER0_OVF_vect</td>
+<td align="left">Timer/Couner0 Overflow</td>
+</tr>
+<tr class="odd">
+<td align="left">SPI_STC_vect</td>
+<td align="left">SPI Serial Transfer Complete</td>
+</tr>
+<tr class="even">
+<td align="left">USART_RX_vect</td>
+<td align="left">USART Rx Complete</td>
+</tr>
+<tr class="odd">
+<td align="left">USART_UDRE_vect</td>
+<td align="left">USART, Data Register Empty</td>
+</tr>
+<tr class="even">
+<td align="left">USART_TX_vect</td>
+<td align="left">USART Tx Complete</td>
+</tr>
+<tr class="odd">
+<td align="left">ADC_vect</td>
+<td align="left">ADC Conversion Complete</td>
+</tr>
+<tr class="even">
+<td align="left">EE_READY_vect</td>
+<td align="left">EEPROM Ready</td>
+</tr>
+<tr class="odd">
+<td align="left">ANALOG_COMP_vect</td>
+<td align="left">Analog Comparator</td>
+</tr>
+<tr class="even">
+<td align="left">TWI_vect</td>
+<td align="left">Two-wire Serial Interface</td>
+</tr>
+<tr class="odd">
+<td align="left">SPM_READY_vect</td>
+<td align="left">Store Program Memory Read</td>
+</tr>
+</tbody>
+</table>
+<h3 id="外部中斷實驗-external-interrupts"><a href="#外部中斷實驗-external-interrupts">外部中斷實驗 (External Interrupts)</a></h3>
+<h4 id="實驗目的"><a href="#實驗目的">實驗目的</a></h4>
+<p>練習處理外部中斷。在這個實驗中，你將利用 ISR() 巨集指令設定中斷服務函式 (Interrupt Service Routine, ISR)，讓程式在 pin 2 產生外部中斷時自動執行 ISR。</p>
+<h4 id="材料"><a href="#材料">材料</a></h4>
+<ul>
+<li>Arduino 主板 x 1</li>
+<li>LED x 1</li>
+<li>Pushbutton x 1</li>
+<li>10K 歐姆電阻 x 1</li>
+<li>麵包板 x 1</li>
+<li>單心線 x N</li>
+</ul>
+<h4 id="接線"><a href="#接線">接線</a></h4>
+<p>把 LED 接到 pin13，長腳 (陽極) 接到 pin13，短腳 (陰極) 接到 GND 把 pushbutton 一支腳接到 +5V，另一支腳接到 pin 2 同時接一顆 10K 電阻連到 GND</p>
+<div class="figure">
+<img src="../img/arduino_intboard1.png" />
+</div>
+<h4 id="int0-與-int1-外部中斷"><a href="#int0-與-int1-外部中斷">INT0 與 INT1 外部中斷</a></h4>
+<p>如下圖所示，ATmega328 有兩個外部中斷，編號 0 (INT0) 在 pin 2 上，而編號 1 (INT1) 在 pin 3 上:</p>
+<div class="figure">
+<img src="../img/arduino_chippin1.png" />
+</div>
+<p>我們可以決定什麼時候要觸發 INT0 和 INT1 外部中斷，一共有四種狀況可以選擇:</p>
+<ul>
+<li>LOW: 當 pin 為 LOW 時觸發中斷</li>
+<li>CHANGE: 當 pin 狀態改變時觸發中斷，不管是從 HIGH 到 LOW 或從 LOW 到 HIGH</li>
+<li>FALLING: 當 pin 狀態從 HIGH 到 LOW 時觸發中斷，又稱負緣觸發</li>
+<li>RISING: 當 pin 狀態從 LOW 到 HIGH 時觸發中斷，又稱正緣觸發</li>
+</ul>
+<p>選擇的方法是透過 ECIRA (External Interrupt Control Register A) 這個暫存器:</p>
+<div class="figure">
+<img src="../img/arduino_eircra.png" alt="▲ 資料來源: ATmega168/328 Datasheet" /><p class="caption">▲ 資料來源: ATmega168/328 Datasheet</p>
+</div>
+<div class="figure">
+<img src="../img/arduino_tableintsc.png" />
+</div>
+<p>以 INT0 外部中斷為例，假如我們希望 pin 2 狀態一有改變就觸發中斷，那麼就要把 ISC01 和 ISC00 設成 01:</p>
+<pre class="sourceCode CPP"><code class="sourceCode cpp">EICRA &amp;= ~_BV(ISC01);                  <span class="co">// pin 狀態改變時觸發中斷</span>
+EICRA |= _BV(ISC00);                   </code></pre>
+<p>除此以外，我們還要設定 EIMSK (External Interrupt Mask Register) 暫存器以啟用 INT0 或 INT1 中斷:</p>
+<div class="figure">
+<img src="../img/arduino_eimsk.png" />
+</div>
+<p>以 INT0 外部中斷為例，要啟用 INT0 外部中斷，得把 INT0 這個位元設成 1:</p>
+<pre class="sourceCode CPP"><code class="sourceCode cpp">EIMSK |= _BV(INT0);                    <span class="co">// enable INT0</span></code></pre>
+<h4 id="程式"><a href="#程式">程式</a></h4>
+<p>先來看使用 <a href="https://docs.google.com/uc?id=0B4GOwiN2Qm96NmEyOGE4NWItNmEwOS00Mjg5LTljMGQtYjM5NzcyNjE1Mzc0&amp;export=download&amp;hl=en">attachInterrupt()</a> 函式的版本(attachInterrupt.pde)，這我們在「 <a href="http://feedproxy.google.com/~r/CooperMaa/~3/HGxWXannOiM/attachinterrupt.html">attachInterrupt() 與外部中斷</a> 」一文中介紹過，程式的邏輯是，當按鍵被按下時打開 LED 燈號，在按鍵放開時關閉 LED 燈號:</p>
+<pre class="sourceCode CPP"><code class="sourceCode cpp">
+<span class="co">/*</span>
+<span class="co"> * attachInterrupt.pde: attachInterrupt() 與外部中斷</span>
+<span class="co"> */</span>
+
+<span class="dt">const</span> <span class="dt">int</span> interruptNumber = <span class="dv">0</span>;           <span class="co">// Interrupt 0 在 pin 2 上</span>
+<span class="dt">const</span> <span class="dt">int</span> buttonPin = <span class="dv">2</span>;                 <span class="co">// 按鈕(pushbutton)</span>
+<span class="dt">const</span> <span class="dt">int</span> ledPin = <span class="dv">13</span>;                   <span class="co">// LED</span>
+<span class="dt">volatile</span> <span class="dt">int</span> buttonState;                <span class="co">// 用來儲存按鈕狀態</span>
+
+<span class="dt">void</span> setup() {
+  pinMode(ledPin, OUTPUT);               <span class="co">// 把 ledPin 設置成 OUTPUT</span>
+  pinMode(buttonPin, INPUT);             <span class="co">// 把 buttonPin 設置成 INPUT</span>
+  
+  <span class="co">// 把外部中斷(interrupt 0)連接到 buttonStateChanged() 函式</span>
+  <span class="co">// CHANGE 是指當 pin 狀態改變時就觸發中斷&amp;#65292;不管是從 HIGH 到 LOW 或從 LOW 到 HIGH</span>
+  attachInterrupt(interruptNumber, buttonStateChanged, CHANGE);
+}
+
+<span class="dt">void</span> loop() {
+  <span class="co">// do nothing</span>
+}
+
+<span class="co">// Interrupt 0 的中斷處理函式</span>
+<span class="co">// 讀取 buttonPin 的狀態&amp;#65292;並反應到 ledPin 上</span>
+<span class="dt">void</span> buttonStateChanged() {
+  buttonState = digitalRead(buttonPin);
+  digitalWrite(ledPin, buttonState);
+}</code></pre>
+<p>要特別注意是，程式裏的 buttonState 變數是宣告成 volatile，這樣做的目的是告訴 Compiler 不要做最佳化，避免變數狀態不同步。給你一個建議，程式主體跟 ISR 都會用到的變數，盡可能把它宣告成 volatile。</p>
+<p>接下來是改成用 EICRA 和 EIMSK 暫存器和 ISR() 巨集指令的版本:</p>
+<pre class="sourceCode CPP"><code class="sourceCode cpp"><span class="co">/*</span>
+<span class="co"> * externalInterrupt.pde: INT 0 外部中斷</span>
+<span class="co"> */</span>
+
+<span class="dt">const</span> <span class="dt">int</span> interruptNumber = <span class="dv">0</span>;           <span class="co">// Interrupt 0 在 pin 2 上</span>
+<span class="dt">const</span> <span class="dt">int</span> buttonPin = <span class="dv">2</span>;                 <span class="co">// 按鈕(pushbutton)</span>
+<span class="dt">const</span> <span class="dt">int</span> ledPin = <span class="dv">13</span>;                   <span class="co">// LED</span>
+<span class="dt">volatile</span> <span class="dt">int</span> buttonState;                <span class="co">// 用來儲存按鈕狀態</span>
+
+<span class="dt">void</span> setup() {
+  pinMode(ledPin, OUTPUT);               <span class="co">// 把 ledPin 設置成 OUTPUT</span>
+  pinMode(buttonPin, INPUT);             <span class="co">// 把 buttonPin 設置成 INPUT</span>
+  
+  EIMSK |= _BV(INT0);                    <span class="co">// enable INT 0</span>
+  EICRA &amp;= ~_BV(ISC01);                  <span class="co">// pin 狀態改變時觸發中斷</span>
+  EICRA |= _BV(ISC00);                   
+}
+
+<span class="dt">void</span> loop() {
+  <span class="co">// do nothing</span>
+}
+
+<span class="co">// 讀取 buttonPin 的狀態&amp;#65292;並反應到 ledPin 上</span>
+<span class="dt">void</span> buttonStateChanged() {
+  buttonState = digitalRead(buttonPin);
+  digitalWrite(ledPin, buttonState);
+}
+
+<span class="co">// Interrupt 0 的中斷處理函式</span>
+ISR(INT0_vect) {
+  buttonStateChanged();
+}</code></pre>
+<p>簡單的說，要處理 INT0 外部中斷，有三個步驟要做:</p>
+<ol style="list-style-type: decimal">
+<li>用 ISR() 巨集指令定義中斷服務函式</li>
+<li>設定 EIMSK 暫存器啟用 INT0 中斷</li>
+<li>設定 EICRA 暫存器決定什麼時候該觸發中斷</li>
+</ol>
+<p>_BV() 巨集我們在「2.2) Blink part2」一文中已經介紹過，如果不想使用 _BV()，這樣寫也是可以的:</p>
+<pre class="sourceCode CPP"><code class="sourceCode cpp">EIMSK |= (<span class="dv">1</span> &lt;&lt; INT0);                  <span class="co">// enable INT 0</span>
+EICRA |= (<span class="dv">1</span> &lt;&lt; ISC00);                 <span class="co">// pin 狀態改變時觸發中斷</span>
+EICRA &amp;= ~(<span class="dv">1</span> &lt;&lt; ISC01);</code></pre>
+<p>另外，ISR() 巨集指令也可以改用 SIGNAL() 巨集指令，SIGNAL() 是早期寫 ISR 的巨集指令。建議你盡可能使用 ISR() 巨集指令，因為 ISR() 比較直覺，只不過你必須知道 SIGNAL() 和 ISR() 幾乎是一樣的東西，而且很多前輩留下的 AVR 程式是用 SIGNAL() 巨集指令。</p>
+<h4 id="延伸閱讀"><a href="#延伸閱讀">延伸閱讀</a></h4>
+<ul>
+<li><a href="http://feedproxy.google.com/~r/CooperMaa/~3/HGxWXannOiM/attachinterrupt.html">attachInterrupt() 與外部中斷</a></li>
+</ul>
+<p>【本文作者為馬萬圳，原文網址為： <a href="http://coopermaa2nd.blogspot.tw/2011/04/3-interrupts.html">http://coopermaa2nd.blogspot.tw/2011/04/3-interrupts.html</a> , <a href="http://coopermaa2nd.blogspot.tw/2011/07/31-external-interrupts.html">http://coopermaa2nd.blogspot.tw/2011/07/31-external-interrupts.html</a> ，由陳鍾誠編輯後納入本雜誌】</p>
+<h2 id="對數-logarithm-作者bridan"><a href="#對數-logarithm-作者bridan">對數 (logarithm) (作者：Bridan)</a></h2>
+<p>以前曾經寫文說明 <a href="http://4rdp.blogspot.tw/2008/04/blog-post_9406.html">開根號</a> 的數學計算，今天就說明工程計算機另一重要計算功能 ─ <a href="http://en.wikipedia.org/wiki/Logarithm">對數</a> 。</p>
+<p>對數的發明，是因為數學家想簡化算數乘除計算的繁瑣，對數的方法於1614年被約翰·納皮爾 (John Napier) 在 Mirifici Logarithmorum Canonis Descriptio (Description of the Wonderful Rule of Logarithms) 書中首次公開，而對數符號 log 來自拉丁文 logarithm，是由義大利數學家卡瓦列里 (Cavalieri，1598 - 1647) 所提出。</p>
+<p>對數的觀念簡單的說，把數值乘除轉換成數值加減，在計算機發明前需要查表換算，加減計算後再反查表求出最後答案，因此有人發明 <a href="http://4rdp.blogspot.tw/2011/08/slide-rule.html">計算尺</a> ，解決查表換算問題。</p>
+<pre><code>log(X*Y) = log(X) + log(Y)
+log(X/Y) = log(X) - log(Y)
+log(Xa) = a * log(X)</code></pre>
+<p>另外，為了區別以 10 為基底及 <a href="http://zh.wikipedia.org/wiki/E_(%E6%95%B0%E5%AD%A6%E5%B8%B8%E6%95%B0)">超越數 e (Euler's number)</a> 為基底的對數，數學習慣分別表示為 log(X)和 ln(X)，而計算機語言喜歡用 log10(X)及 log(X)表示。在日常應用方面，由於人類對外界感覺的魯鈍，也運用了許多對數的觀念，例如，聲音用分貝、地震用芮氏規模、天文觀測用星等，意思是訊號要變化很大，人們才會有所感覺。</p>
+<p>回歸主題，本文的要點為計算機如何計算對數值？在 <a href="http://4rdp.blogspot.tw/2010/03/signle-double.html">資料型態認識─浮點數 (single ＆ double)</a> 一文提到，任何正實數可以表示為 <img src="../timg/3a12db105a53.jpg" /> ， 是整數， <img src="../timg/497a59536d22.jpg" /> ，那</p>
+<p><img src="../timg/c69c89d21102.jpg" /> 　</p>
+<p>接下來就要思考如何計算 ln(u)，這需要 從等比級數和說起，令 Y 為等比級數和，將它減掉與 x 相乘的值等於 1，因此 Y 可得一個生成函數 1/(1-x)。</p>
+<p><img src="../timg/ec3d4cb1790e.jpg" /> 　</p>
+<p><img src="../timg/d39bca6afacb.jpg" /> 　</p>
+<p><img src="../timg/2d4b0997dbb8.jpg" /> 　</p>
+<p><img src="../timg/1c15e42c63bb.jpg" /> 　</p>
+<p>如果要讓等比級數和 Y 收斂等於生成函數，其要件為 |x|＜1。然後將 Y 對 x 積分可得，</p>
+<p><img src="../timg/7ad33f02e8f6.jpg" /> 　 <img src="../timg/d07233e322b5.jpg" /> 　</p>
+<p>將上式 x 改以 -x 代入</p>
+<p><img src="../timg/7182b36d1674.jpg" /> 　</p>
+<p>然後兩式合併</p>
+<p><img src="../timg/319cc411587d.jpg" /> 　</p>
+<p>可能有人看到這裡，覺得越搞越複雜，其實這是計算機快速收斂最好的方法，因為計算 ln(1+x)將需要計算更多項次才能達到更好的精確度， <strong>如果要精確到小數第 n 位，必須算到</strong> <img src="../timg/04c02199eaeb.jpg" /> 。那如何求出 x，令</p>
+<p><img src="../timg/72b13f3496ba.jpg" /> 　</p>
+<p><img src="../timg/09532c614471.jpg" /> 　</p>
+<p>以上是超越數 e 為基底的對數計算，若想計算以 10 為基底的對數可以利用下列公式換算</p>
+<p><img src="../timg/fcb535f02ee7.jpg" /> 　</p>
+<p>(本文來自「研發養成所」 Bridan 的網誌，原文網址為 <a href="http://4rdp.blogspot.tw/2014/06/logarithm.html">http://4rdp.blogspot.tw/2014/06/logarithm.html</a> ，由陳鍾誠編輯後納入程式人雜誌)</p>
+<h2 id="phonegap-google-map-作者廖憲得-0xde"><a href="#phonegap-google-map-作者廖憲得-0xde">[PhoneGap] Google Map (作者：廖憲得 0xde)</a></h2>
+<h3 id="大整數加法"><a href="#大整數加法">大整數加法</a></h3>
+<pre class="sourceCode html"><code class="sourceCode html"><span class="dt">&lt;!DOCTYPE </span>html<span class="dt">&gt;</span>
+<span class="kw">&lt;html&gt;</span>
+<span class="kw">&lt;head&gt;</span>
+
+<span class="kw">&lt;meta</span><span class="ot"> http-equiv=</span><span class="st">&quot;content-type&quot;</span><span class="ot"> content=</span><span class="st">&quot;text/html; charset=UTF-8&quot;</span> <span class="kw">/&gt;</span>
+
+<span class="kw">&lt;script</span>
+<span class="ot">src=</span><span class="st">&quot;http://maps.googleapis.com/maps/api/js?key=AIzaSyDY0kkJiTPVd2U7aTOAwhc9ySH6oHxOIYM</span><span class="er">&amp;</span><span class="st">sensor=false&quot;</span><span class="kw">&gt;</span>
+<span class="kw">&lt;/script&gt;</span>
+
+<span class="kw">&lt;script&gt;</span>
+<span class="kw">var</span> map;
+<span class="er">function initialize()</span>
+{
+<span class="kw">var</span> mapOpt = {
+    <span class="dt">center</span>:<span class="kw">new</span> <span class="ot">google</span>.<span class="ot">maps</span>.<span class="fu">LatLng</span>(<span class="fl">24.150026</span>,<span class="fl">120.683868</span>),
+    <span class="dt">zoom</span>:<span class="dv">15</span>,
+    <span class="dt">mapTypeId</span>:<span class="ot">google</span>.<span class="ot">maps</span>.<span class="ot">MapTypeId</span>.<span class="fu">ROADMAP</span>,
+    <span class="dt">mapTypeControl</span>: <span class="kw">false</span>,
+    <span class="dt">navigationControl </span>: <span class="kw">false</span>,
+    <span class="dt">scaleControl </span>: <span class="kw">false</span>,
+    <span class="dt">streetViewControl</span>: <span class="kw">false</span>
+  };
+map=<span class="kw">new</span> <span class="ot">google</span>.<span class="ot">maps</span>.<span class="fu">Map</span>(<span class="ot">document</span>.<span class="fu">getElementById</span>(<span class="st">&quot;googleMap&quot;</span>),mapOpt);
+}
+
+<span class="er">function Reinitialize(MapX,MapY)</span>
+{
+<span class="kw">var</span> mapOpt = {
+    <span class="dt">center</span>:<span class="kw">new</span> <span class="ot">google</span>.<span class="ot">maps</span>.<span class="fu">LatLng</span>(MapX,MapY),
+    <span class="dt">zoom</span>:<span class="dv">15</span>,
+    <span class="dt">mapTypeId</span>:<span class="ot">google</span>.<span class="ot">maps</span>.<span class="ot">MapTypeId</span>.<span class="fu">ROADMAP</span>,
+    <span class="dt">mapTypeControl</span>: <span class="kw">false</span>,
+    <span class="dt">navigationControl </span>: <span class="kw">false</span>,
+    <span class="dt">scaleControl </span>: <span class="kw">false</span>,
+    <span class="dt">streetViewControl</span>: <span class="kw">false</span>
+  };
+map=<span class="kw">new</span> <span class="ot">google</span>.<span class="ot">maps</span>.<span class="fu">Map</span>(<span class="ot">document</span>.<span class="fu">getElementById</span>(<span class="st">&quot;googleMap&quot;</span>),mapOpt);
+}
+
+<span class="er">google.maps.event.addDomListener(window, &#39;load&#39;,initialize);</span>
+
+<span class="kw">&lt;/script&gt;</span>
+<span class="kw">&lt;/head&gt;</span>
+<span class="kw">&lt;body&gt;</span>
+
+<span class="kw">&lt;button</span><span class="ot"> onclick=</span><span class="st">&quot;map.setMapTypeId(google.maps.MapTypeId.ROADMAP);&quot;</span><span class="kw">&gt;</span>道路地圖<span class="kw">&lt;/button&gt;</span>
+<span class="kw">&lt;button</span><span class="ot"> onclick=</span><span class="st">&quot;map.setMapTypeId(google.maps.MapTypeId.SATELLITE);&quot;</span><span class="kw">&gt;</span>衛星地圖<span class="kw">&lt;/button&gt;</span>
+<span class="kw">&lt;button</span><span class="ot"> onclick=</span><span class="st">&quot;map.setMapTypeId(google.maps.MapTypeId.HYBRID);&quot;</span><span class="kw">&gt;</span>混合地圖<span class="kw">&lt;/button&gt;</span>
+<span class="kw">&lt;button</span><span class="ot"> onclick=</span><span class="st">&quot;map.setMapTypeId(google.maps.MapTypeId.TERRAIN);&quot;</span><span class="kw">&gt;</span>實際地圖<span class="kw">&lt;/button&gt;</span>
+
+
+
+
+    請輸入經緯度：
+    <span class="kw">&lt;input</span><span class="ot"> id=</span><span class="st">&quot;XX&quot;</span><span class="ot"> type=</span><span class="st">&quot;text&quot;</span><span class="ot"> style=</span><span class="st">&quot;width:80px&quot;</span> <span class="kw">&gt;</span>
+    <span class="kw">&lt;input</span><span class="ot"> ID=</span><span class="st">&quot;YY&quot;</span><span class="ot"> type=</span><span class="st">&quot;text&quot;</span><span class="ot"> style=</span><span class="st">&quot;width:80px&quot;</span> <span class="kw">&gt;</span>
+    <span class="kw">&lt;button</span><span class="ot"> onclick=</span><span class="st">&quot;Reinitialize(XX.value,YY.value)&quot;</span><span class="kw">&gt;</span>搜尋經緯度<span class="kw">&lt;/button&gt;</span>
+
+<span class="kw">&lt;div</span><span class="ot"> id=</span><span class="st">&quot;googleMap&quot;</span><span class="ot"> style=</span><span class="st">&quot;width:400px;height:300px;&quot;</span><span class="kw">&gt;&lt;/div&gt;</span>
+
+<span class="kw">&lt;/body&gt;</span>
+<span class="kw">&lt;/html&gt;</span></code></pre>
+<div class="figure">
+<img src="../img/PhoneGapGoogleMap.jpg" />
+</div>
+<p>【本文作者為「廖憲得」，原文網址為： <a href="http://www.dotblogs.com.tw/0xde/archive/2014/06/27/145727.aspx">http://www.dotblogs.com.tw/0xde/archive/2014/06/27/145727.aspx</a> ，由陳鍾誠編輯後納入本雜誌】</p>
+<h2 id="開放電腦計畫-12-使用區塊式方法設計-mcu0-的-verilog-程式-作者陳鍾誠"><a href="#開放電腦計畫-12-使用區塊式方法設計-mcu0-的-verilog-程式-作者陳鍾誠">開放電腦計畫 (12) – 使用區塊式方法設計 MCU0 的 Verilog 程式 (作者：陳鍾誠)</a></h2>
+<h3 id="前言-3"><a href="#前言-3">前言</a></h3>
+<p>我們曾經在下列文章中設計出了 MCU0 迷你版這個只有六個指令的微控制器，整個實作只有 51 行。</p>
+<ul>
+<li><a href="http://programmermagazine.github.io/201312/htm/article5.html">開放電腦計畫 (6) – 一顆只有 51 行 Verilog 程式碼的 16 位元處理器 MCU0</a></li>
+</ul>
+<p>但是、上述程式雖然簡單，但卻是採用流程式的寫法。雖然、筆者不覺得流程式的寫法有甚麼特別的缺陷，但是對那些習慣採用硬體角度設計 Verilog 程式的人而言，似乎採用「區塊式的設計方式」才是正統，所以、筆者將於本文中採用「區塊式的方式重新設計」MCU0 迷你版，以便能學習「硬體設計者」的思考方式。</p>
+<h3 id="mcu0-迷你版的指令表"><a href="#mcu0-迷你版的指令表">MCU0 迷你版的指令表</a></h3>
+<p>為了方便讀者閱讀，不需要查閱前文，我們再次列出了 MCU0 迷你版的指令表如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">OP</th>
+<th align="left">name</th>
+<th align="left">格式 意</th>
+<th align="left">義</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">0</td>
+<td align="left">LD</td>
+<td align="left">LD C</td>
+<td align="left">A = [C]</td>
+</tr>
+<tr class="even">
+<td align="left">1</td>
+<td align="left">ADD</td>
+<td align="left">ADD C</td>
+<td align="left">A = A + [C]</td>
+</tr>
+<tr class="odd">
+<td align="left">2</td>
+<td align="left">JMP</td>
+<td align="left">JMP C</td>
+<td align="left">PC = C</td>
+</tr>
+<tr class="even">
+<td align="left">3</td>
+<td align="left">ST</td>
+<td align="left">ST C</td>
+<td align="left">[C] = A</td>
+</tr>
+<tr class="odd">
+<td align="left">4</td>
+<td align="left">CMP</td>
+<td align="left">CMP C</td>
+<td align="left">SW = A CMP [C]</td>
+</tr>
+<tr class="even">
+<td align="left">5</td>
+<td align="left">JEQ</td>
+<td align="left">JEQ C</td>
+<td align="left">if SW[30]=Z=1 then PC = C</td>
+</tr>
+</tbody>
+</table>
+<h3 id="mcu0-迷你版的區塊設計圖"><a href="#mcu0-迷你版的區塊設計圖">MCU0 迷你版的區塊設計圖</a></h3>
+<p>在MCU0 迷你版裏，總共有三個暫存器，分別是 A, PC 與 SW，一個具有兩組讀取 (i1/d1, i2/d2) 與一組寫入的記憶體 (wi/wd)，還有一個算術邏輯單元 ALU，這個電路的設計圖如下。</p>
+<div class="figure">
+<img src="../img/mcu0bm.jpg" alt="圖、MCU0bm 的區塊設計圖" /><p class="caption">圖、MCU0bm 的區塊設計圖</p>
+</div>
+<p>由於筆者不熟悉數位電路設計的繪圖軟體，因此就簡單的用 LibreOffice 的 Impress 繪製了上圖，純粹採用區塊表達法，並沒有使用標準的數位電路設計圖示。</p>
+<h3 id="原始碼"><a href="#原始碼">原始碼</a></h3>
+<p>根據上圖，我們設計出了下列 Verilog 程式，您應該可以很清楚的找出程式與圖形之間的對應關係。</p>
+<pre class="sourceCode Verilog"><code class="sourceCode verilog"><span class="kw">module</span> memory(<span class="dt">input</span> w, <span class="dt">input</span> [<span class="dv">11</span>:<span class="dv">0</span>] wi, <span class="dt">input</span> [<span class="dv">15</span>:<span class="dv">0</span>] wd, <span class="dt">input</span> [<span class="dv">11</span>:<span class="dv">0</span>] i1, <span class="dt">output</span> [<span class="dv">15</span>:<span class="dv">0</span>] d1, <span class="dt">input</span> [<span class="dv">11</span>:<span class="dv">0</span>] i2, <span class="dt">output</span> [<span class="dv">15</span>:<span class="dv">0</span>] d2);
+  <span class="dt">integer</span> i;  
+  <span class="dt">reg</span> [<span class="dv">7</span>:<span class="dv">0</span>] m[<span class="dv">0</span>:<span class="dv">2</span>**<span class="dv">12-1</span>];
+  <span class="kw">initial</span> <span class="kw">begin</span>
+    <span class="dt">$readmemh</span>(<span class="st">&quot;mcu0m.hex&quot;</span>, m);
+    <span class="kw">for</span> (i=<span class="dv">0</span>; i &lt; <span class="dv">32</span>; i=i<span class="dv">+2</span>) <span class="kw">begin</span>
+      <span class="dt">$display</span>(<span class="st">&quot;%x: %x&quot;</span>, i, {m[i], m[i<span class="dv">+1</span>]});
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+  <span class="kw">assign</span> d1 = {m[i1], m[i1<span class="dv">+1</span>]};
+  <span class="kw">assign</span> d2 = {m[i2], m[i2<span class="dv">+1</span>]};
+  <span class="kw">always</span> @(w) <span class="kw">begin</span>
+    <span class="kw">if</span> (w) {m[wi], m[wi<span class="dv">+1</span>]} = wd;
+  <span class="kw">end</span>
+<span class="kw">endmodule</span>
+
+<span class="kw">module</span> adder#(<span class="dt">parameter</span> W=<span class="dv">16</span>)(<span class="dt">input</span> [W<span class="dv">-1</span>:<span class="dv">0</span>] a, <span class="dt">input</span> [W<span class="dv">-1</span>:<span class="dv">0</span>] b, <span class="dt">output</span> [W<span class="dv">-1</span>:<span class="dv">0</span>] c);
+  <span class="kw">assign</span> c = a + b;
+<span class="kw">endmodule</span>
+
+<span class="kw">module</span> register#(<span class="dt">parameter</span> W=<span class="dv">16</span>)(<span class="dt">input</span> clock, w, <span class="dt">input</span> [W<span class="dv">-1</span>:<span class="dv">0</span>] ri, <span class="dt">output</span> [W<span class="dv">-1</span>:<span class="dv">0</span>] ro);
+<span class="dt">reg</span> [W<span class="dv">-1</span>:<span class="dv">0</span>] r;
+  <span class="kw">always</span> @(<span class="kw">posedge</span> clock) <span class="kw">begin</span>
+    <span class="kw">if</span> (w) r = ri;
+  <span class="kw">end</span>
+  <span class="kw">assign</span> ro=r;
+<span class="kw">endmodule</span>
+
+<span class="kw">module</span> alu(<span class="dt">input</span> [<span class="dv">3</span>:<span class="dv">0</span>] op, <span class="dt">input</span> [<span class="dv">15</span>:<span class="dv">0</span>] a, <span class="dt">input</span> [<span class="dv">15</span>:<span class="dv">0</span>] b, <span class="dt">output</span> <span class="dt">reg</span> [<span class="dv">15</span>:<span class="dv">0</span>] c);
+<span class="dt">parameter</span> [<span class="dv">3</span>:<span class="dv">0</span>] ZERO=<span class="bn">4&#39;h0</span>, ADD=<span class="bn">4&#39;h1</span>, CMP=<span class="bn">4&#39;he</span>, APASS=<span class="bn">4&#39;hf</span>;
+  <span class="kw">always</span> @(*) <span class="kw">begin</span>
+    <span class="kw">case</span> (op)
+      <span class="dv">ADD:</span> c = a+b;
+      <span class="dv">CMP:</span> <span class="kw">begin</span> c[<span class="dv">15</span>]=(a &lt; b); c[<span class="dv">14</span>]=(a==b); c[<span class="dv">13</span>:<span class="dv">0</span>]=<span class="bn">14&#39;h0</span>; <span class="kw">end</span>
+      <span class="dv">APASS:</span> c = a;
+      <span class="kw">default</span>: c = <span class="dv">0</span>;
+    <span class="kw">endcase</span>
+  <span class="kw">end</span>
+<span class="kw">endmodule</span>
+
+<span class="kw">module</span> mux#(<span class="dt">parameter</span> W=<span class="dv">16</span>)(<span class="dt">input</span> sel, <span class="dt">input</span> [W<span class="dv">-1</span>:<span class="dv">0</span>] i0, i1, <span class="dt">output</span> [W<span class="dv">-1</span>:<span class="dv">0</span>] o);
+  <span class="kw">assign</span> o=(sel)?i1:i0;
+<span class="kw">endmodule</span>
+
+<span class="ot">`define OP ir[15:12]</span>
+<span class="ot">`define C  ir[11:0]</span>
+<span class="ot">`define N  SW.r[15]</span>
+<span class="ot">`define Z  SW.r[14]</span>
+
+<span class="kw">module</span> mcu(<span class="dt">input</span> clock);
+  <span class="dt">parameter</span> [<span class="dv">3</span>:<span class="dv">0</span>] LD=<span class="bn">4&#39;h0</span>,ADD=<span class="bn">4&#39;h1</span>,JMP=<span class="bn">4&#39;h2</span>,ST=<span class="bn">4&#39;h3</span>,CMP=<span class="bn">4&#39;h4</span>,JEQ=<span class="bn">4&#39;h5</span>;
+  <span class="dt">reg</span>  mw, aw, pcmux, sww;
+  <span class="dt">reg</span> [<span class="dv">3</span>:<span class="dv">0</span>] aluop;
+  <span class="dt">wire</span> [<span class="dv">11</span>:<span class="dv">0</span>] pco, pci, pcnext;
+  <span class="dt">wire</span> [<span class="dv">15</span>:<span class="dv">0</span>] aluout, ao, swo, ir, mo;
+  register#(.W(<span class="dv">12</span>)) PC(clock, <span class="dv">1</span>, pci, pco);
+  adder#(.W(<span class="dv">12</span>)) adder0(<span class="dv">2</span>, pco, pcnext);
+  memory mem(mw, <span class="ot">`C</span>, ao, pco[<span class="dv">11</span>:<span class="dv">0</span>], ir, <span class="ot">`C</span>, mo);
+  register#(.W(<span class="dv">16</span>)) A(~clock, aw, aluout, ao);
+  register#(.W(<span class="dv">16</span>)) SW(~clock, sww, aluout, swo);
+  alu alu0(aluop, mo, ao, aluout);
+  mux#(.W(<span class="dv">12</span>)) muxpc(pcmux, pcnext, <span class="ot">`C</span>, pci);
+
+  <span class="kw">initial</span> <span class="kw">begin</span> 
+    PC.r = <span class="dv">0</span>; SW.r = <span class="dv">0</span>; mw = <span class="dv">0</span>; aw = <span class="dv">0</span>; pcmux=<span class="dv">0</span>; sww=<span class="dv">0</span>; aluop=alu0.ZERO;
+  <span class="kw">end</span>
+
+  <span class="kw">always</span> @(ir <span class="dt">or</span> mo <span class="dt">or</span> A.r) <span class="kw">begin</span>
+    mw = <span class="dv">0</span>;
+    aw = <span class="dv">0</span>;
+    sww = <span class="dv">0</span>;
+    pcmux = <span class="dv">0</span>;
+    aluop = alu0.ZERO;
+    <span class="kw">case</span> (<span class="ot">`OP</span>)
+      <span class="dv">LD:</span> <span class="kw">begin</span> aw=<span class="dv">1</span>; aluop=alu0.APASS; <span class="kw">end</span>     <span class="co">// LD C</span>
+      <span class="dv">ST:</span> mw=<span class="dv">1</span>;                                 <span class="co">// ST C</span>
+      <span class="dv">JMP:</span> pcmux=<span class="dv">1</span>;                             <span class="co">// JMP C</span>
+      <span class="dv">JEQ:</span> <span class="kw">if</span> (<span class="ot">`Z</span>) pcmux=<span class="dv">1</span>;                     <span class="co">// JEQ C</span>
+      <span class="dv">CMP:</span> <span class="kw">begin</span> sww=<span class="dv">1</span>; aluop = alu0.CMP; <span class="kw">end</span>   <span class="co">// CMP C</span>
+      <span class="dv">ADD:</span> <span class="kw">begin</span> aw=<span class="dv">1</span>; aluop=alu0.ADD; <span class="kw">end</span>      <span class="co">// ADD C</span>
+    <span class="kw">endcase</span>
+  <span class="kw">end</span>
+<span class="kw">endmodule</span>
+
+<span class="kw">module</span> main;         <span class="co">// 測試程式開始</span>
+<span class="dt">reg</span> clock;           <span class="co">// 時脈 clock 變數</span>
+
+mcu mcu0(clock);
+
+<span class="kw">initial</span> <span class="kw">begin</span> 
+  clock = <span class="dv">0</span>;
+  <span class="dt">$monitor</span>(<span class="st">&quot;%4dns pc=%x ir=%x mo=%x sw=%x a=%d mw=%b aluout=%x&quot;</span>, <span class="dt">$stime</span>, mcu0.PC.r, mcu0.ir, mcu0.mo, mcu0.SW.r, mcu0.A.r, mcu0.mw, mcu0.aluout);
+  <span class="bn">#1000</span> <span class="dt">$finish</span>;
+<span class="kw">end</span>
+<span class="kw">always</span> <span class="bn">#5</span> <span class="kw">begin</span> 
+  clock=~clock;    <span class="co">// 每隔 5ns 反相，時脈週期為 10ns</span>
+<span class="kw">end</span>  
+<span class="kw">endmodule</span></code></pre>
+<h3 id="輸入的機器碼-mcu0m.hex"><a href="#輸入的機器碼-mcu0m.hex">輸入的機器碼 mcu0m.hex</a></h3>
+<p>為了測試上述程式，我們同樣採用了計算 <code>SUM=1+2+...+10</code> 的這個程式作為輸入，以下是機器碼與對應的組合語言程式。</p>
+<pre><code>00 16  // 00    LOOP:   LD    I    
+40 1A  // 02            CMP   N    
+50 12  // 04            JEQ   EXIT
+10 18  // 06            ADD   K1    
+30 16  // 08            ST    I    
+00 14  // 0A            LD    SUM    
+10 16  // 0C            ADD   I    
+30 14  // 0E            ST    SUM    
+20 00  // 10            JMP   LOOP
+20 12  // 12    EXIT:   JMP   EXIT
+00 00  // 14    SUM:    WORD  0    
+00 00  // 16    I:      WORD  0    
+00 01  // 18    K1:     WORD  1    
+00 0A  // 1A    N:      WORD  10    </code></pre>
+<h3 id="執行結果-1"><a href="#執行結果-1">執行結果</a></h3>
+<p>編寫完成之後，我們就可以測試整個 mcu0bm.v 程式了，其執行結果如下所示。</p>
+<pre><code>C:\Dropbox\Public\web\oc\code\mcu0&gt;iverilog mcu0bm.v -o mcu0bm
+
+C:\Dropbox\Public\web\oc\code\mcu0&gt;vvp mcu0bm
+WARNING: mcu0bm.v:5: $readmemh(mcu0m.hex): Not enough words in the file for the
+requested range [0:4095].
+00000000: 0016
+00000002: 401a
+00000004: 5012
+00000006: 1018
+00000008: 3016
+0000000a: 0014
+0000000c: 1016
+0000000e: 3014
+00000010: 2000
+00000012: 2012
+00000014: 0000
+00000016: 0000
+00000018: 0001
+0000001a: 000a
+0000001c: xxxx
+0000001e: xxxx
+   0ns pc=000 ir=0016 mo=0000 sw=0000 a=    0 mw=0 aluout=0000
+   5ns pc=002 ir=401a mo=000a sw=0000 a=    0 mw=0 aluout=0000
+  15ns pc=004 ir=5012 mo=2012 sw=0000 a=    0 mw=0 aluout=0000
+  25ns pc=006 ir=1018 mo=0001 sw=0000 a=    0 mw=0 aluout=0001
+  30ns pc=006 ir=1018 mo=0001 sw=0000 a=    1 mw=0 aluout=0002
+  35ns pc=008 ir=3016 mo=0001 sw=0000 a=    1 mw=1 aluout=0000
+  45ns pc=00a ir=0014 mo=0000 sw=0000 a=    1 mw=0 aluout=0000
+  50ns pc=00a ir=0014 mo=0000 sw=0000 a=    0 mw=0 aluout=0000
+  55ns pc=00c ir=1016 mo=0001 sw=0000 a=    0 mw=0 aluout=0001
+  60ns pc=00c ir=1016 mo=0001 sw=0000 a=    1 mw=0 aluout=0002
+  65ns pc=00e ir=3014 mo=0001 sw=0000 a=    1 mw=1 aluout=0000
+  75ns pc=010 ir=2000 mo=0016 sw=0000 a=    1 mw=0 aluout=0000
+  85ns pc=000 ir=0016 mo=0001 sw=0000 a=    1 mw=0 aluout=0001
+  95ns pc=002 ir=401a mo=000a sw=0000 a=    1 mw=0 aluout=0000
+ 105ns pc=004 ir=5012 mo=2012 sw=0000 a=    1 mw=0 aluout=0000
+ 115ns pc=006 ir=1018 mo=0001 sw=0000 a=    1 mw=0 aluout=0002
+ 120ns pc=006 ir=1018 mo=0001 sw=0000 a=    2 mw=0 aluout=0003
+ 125ns pc=008 ir=3016 mo=0002 sw=0000 a=    2 mw=1 aluout=0000
+ 135ns pc=00a ir=0014 mo=0001 sw=0000 a=    2 mw=0 aluout=0001
+ 140ns pc=00a ir=0014 mo=0001 sw=0000 a=    1 mw=0 aluout=0001
+ 145ns pc=00c ir=1016 mo=0002 sw=0000 a=    1 mw=0 aluout=0003
+ 150ns pc=00c ir=1016 mo=0002 sw=0000 a=    3 mw=0 aluout=0005
+ 155ns pc=00e ir=3014 mo=0003 sw=0000 a=    3 mw=1 aluout=0000
+ 165ns pc=010 ir=2000 mo=0016 sw=0000 a=    3 mw=0 aluout=0000
+ 175ns pc=000 ir=0016 mo=0002 sw=0000 a=    3 mw=0 aluout=0002
+ 180ns pc=000 ir=0016 mo=0002 sw=0000 a=    2 mw=0 aluout=0002
+ 185ns pc=002 ir=401a mo=000a sw=0000 a=    2 mw=0 aluout=0000
+ 195ns pc=004 ir=5012 mo=2012 sw=0000 a=    2 mw=0 aluout=0000
+ 205ns pc=006 ir=1018 mo=0001 sw=0000 a=    2 mw=0 aluout=0003
+ 210ns pc=006 ir=1018 mo=0001 sw=0000 a=    3 mw=0 aluout=0004
+ 215ns pc=008 ir=3016 mo=0003 sw=0000 a=    3 mw=1 aluout=0000
+ 225ns pc=00a ir=0014 mo=0003 sw=0000 a=    3 mw=0 aluout=0003
+ 235ns pc=00c ir=1016 mo=0003 sw=0000 a=    3 mw=0 aluout=0006
+ 240ns pc=00c ir=1016 mo=0003 sw=0000 a=    6 mw=0 aluout=0009
+ 245ns pc=00e ir=3014 mo=0006 sw=0000 a=    6 mw=1 aluout=0000
+ 255ns pc=010 ir=2000 mo=0016 sw=0000 a=    6 mw=0 aluout=0000
+ 265ns pc=000 ir=0016 mo=0003 sw=0000 a=    6 mw=0 aluout=0003
+ 270ns pc=000 ir=0016 mo=0003 sw=0000 a=    3 mw=0 aluout=0003
+ 275ns pc=002 ir=401a mo=000a sw=0000 a=    3 mw=0 aluout=0000
+ 285ns pc=004 ir=5012 mo=2012 sw=0000 a=    3 mw=0 aluout=0000
+ 295ns pc=006 ir=1018 mo=0001 sw=0000 a=    3 mw=0 aluout=0004
+ 300ns pc=006 ir=1018 mo=0001 sw=0000 a=    4 mw=0 aluout=0005
+ 305ns pc=008 ir=3016 mo=0004 sw=0000 a=    4 mw=1 aluout=0000
+ 315ns pc=00a ir=0014 mo=0006 sw=0000 a=    4 mw=0 aluout=0006
+ 320ns pc=00a ir=0014 mo=0006 sw=0000 a=    6 mw=0 aluout=0006
+ 325ns pc=00c ir=1016 mo=0004 sw=0000 a=    6 mw=0 aluout=000a
+ 330ns pc=00c ir=1016 mo=0004 sw=0000 a=   10 mw=0 aluout=000e
+ 335ns pc=00e ir=3014 mo=000a sw=0000 a=   10 mw=1 aluout=0000
+ 345ns pc=010 ir=2000 mo=0016 sw=0000 a=   10 mw=0 aluout=0000
+ 355ns pc=000 ir=0016 mo=0004 sw=0000 a=   10 mw=0 aluout=0004
+ 360ns pc=000 ir=0016 mo=0004 sw=0000 a=    4 mw=0 aluout=0004
+ 365ns pc=002 ir=401a mo=000a sw=0000 a=    4 mw=0 aluout=0000
+ 375ns pc=004 ir=5012 mo=2012 sw=0000 a=    4 mw=0 aluout=0000
+ 385ns pc=006 ir=1018 mo=0001 sw=0000 a=    4 mw=0 aluout=0005
+ 390ns pc=006 ir=1018 mo=0001 sw=0000 a=    5 mw=0 aluout=0006
+ 395ns pc=008 ir=3016 mo=0005 sw=0000 a=    5 mw=1 aluout=0000
+ 405ns pc=00a ir=0014 mo=000a sw=0000 a=    5 mw=0 aluout=000a
+ 410ns pc=00a ir=0014 mo=000a sw=0000 a=   10 mw=0 aluout=000a
+ 415ns pc=00c ir=1016 mo=0005 sw=0000 a=   10 mw=0 aluout=000f
+ 420ns pc=00c ir=1016 mo=0005 sw=0000 a=   15 mw=0 aluout=0014
+ 425ns pc=00e ir=3014 mo=000f sw=0000 a=   15 mw=1 aluout=0000
+ 435ns pc=010 ir=2000 mo=0016 sw=0000 a=   15 mw=0 aluout=0000
+ 445ns pc=000 ir=0016 mo=0005 sw=0000 a=   15 mw=0 aluout=0005
+ 450ns pc=000 ir=0016 mo=0005 sw=0000 a=    5 mw=0 aluout=0005
+ 455ns pc=002 ir=401a mo=000a sw=0000 a=    5 mw=0 aluout=0000
+ 465ns pc=004 ir=5012 mo=2012 sw=0000 a=    5 mw=0 aluout=0000
+ 475ns pc=006 ir=1018 mo=0001 sw=0000 a=    5 mw=0 aluout=0006
+ 480ns pc=006 ir=1018 mo=0001 sw=0000 a=    6 mw=0 aluout=0007
+ 485ns pc=008 ir=3016 mo=0006 sw=0000 a=    6 mw=1 aluout=0000
+ 495ns pc=00a ir=0014 mo=000f sw=0000 a=    6 mw=0 aluout=000f
+ 500ns pc=00a ir=0014 mo=000f sw=0000 a=   15 mw=0 aluout=000f
+ 505ns pc=00c ir=1016 mo=0006 sw=0000 a=   15 mw=0 aluout=0015
+ 510ns pc=00c ir=1016 mo=0006 sw=0000 a=   21 mw=0 aluout=001b
+ 515ns pc=00e ir=3014 mo=0015 sw=0000 a=   21 mw=1 aluout=0000
+ 525ns pc=010 ir=2000 mo=0016 sw=0000 a=   21 mw=0 aluout=0000
+ 535ns pc=000 ir=0016 mo=0006 sw=0000 a=   21 mw=0 aluout=0006
+ 540ns pc=000 ir=0016 mo=0006 sw=0000 a=    6 mw=0 aluout=0006
+ 545ns pc=002 ir=401a mo=000a sw=0000 a=    6 mw=0 aluout=0000
+ 555ns pc=004 ir=5012 mo=2012 sw=0000 a=    6 mw=0 aluout=0000
+ 565ns pc=006 ir=1018 mo=0001 sw=0000 a=    6 mw=0 aluout=0007
+ 570ns pc=006 ir=1018 mo=0001 sw=0000 a=    7 mw=0 aluout=0008
+ 575ns pc=008 ir=3016 mo=0007 sw=0000 a=    7 mw=1 aluout=0000
+ 585ns pc=00a ir=0014 mo=0015 sw=0000 a=    7 mw=0 aluout=0015
+ 590ns pc=00a ir=0014 mo=0015 sw=0000 a=   21 mw=0 aluout=0015
+ 595ns pc=00c ir=1016 mo=0007 sw=0000 a=   21 mw=0 aluout=001c
+ 600ns pc=00c ir=1016 mo=0007 sw=0000 a=   28 mw=0 aluout=0023
+ 605ns pc=00e ir=3014 mo=001c sw=0000 a=   28 mw=1 aluout=0000
+ 615ns pc=010 ir=2000 mo=0016 sw=0000 a=   28 mw=0 aluout=0000
+ 625ns pc=000 ir=0016 mo=0007 sw=0000 a=   28 mw=0 aluout=0007
+ 630ns pc=000 ir=0016 mo=0007 sw=0000 a=    7 mw=0 aluout=0007
+ 635ns pc=002 ir=401a mo=000a sw=0000 a=    7 mw=0 aluout=0000
+ 645ns pc=004 ir=5012 mo=2012 sw=0000 a=    7 mw=0 aluout=0000
+ 655ns pc=006 ir=1018 mo=0001 sw=0000 a=    7 mw=0 aluout=0008
+ 660ns pc=006 ir=1018 mo=0001 sw=0000 a=    8 mw=0 aluout=0009
+ 665ns pc=008 ir=3016 mo=0008 sw=0000 a=    8 mw=1 aluout=0000
+ 675ns pc=00a ir=0014 mo=001c sw=0000 a=    8 mw=0 aluout=001c
+ 680ns pc=00a ir=0014 mo=001c sw=0000 a=   28 mw=0 aluout=001c
+ 685ns pc=00c ir=1016 mo=0008 sw=0000 a=   28 mw=0 aluout=0024
+ 690ns pc=00c ir=1016 mo=0008 sw=0000 a=   36 mw=0 aluout=002c
+ 695ns pc=00e ir=3014 mo=0024 sw=0000 a=   36 mw=1 aluout=0000
+ 705ns pc=010 ir=2000 mo=0016 sw=0000 a=   36 mw=0 aluout=0000
+ 715ns pc=000 ir=0016 mo=0008 sw=0000 a=   36 mw=0 aluout=0008
+ 720ns pc=000 ir=0016 mo=0008 sw=0000 a=    8 mw=0 aluout=0008
+ 725ns pc=002 ir=401a mo=000a sw=0000 a=    8 mw=0 aluout=0000
+ 735ns pc=004 ir=5012 mo=2012 sw=0000 a=    8 mw=0 aluout=0000
+ 745ns pc=006 ir=1018 mo=0001 sw=0000 a=    8 mw=0 aluout=0009
+ 750ns pc=006 ir=1018 mo=0001 sw=0000 a=    9 mw=0 aluout=000a
+ 755ns pc=008 ir=3016 mo=0009 sw=0000 a=    9 mw=1 aluout=0000
+ 765ns pc=00a ir=0014 mo=0024 sw=0000 a=    9 mw=0 aluout=0024
+ 770ns pc=00a ir=0014 mo=0024 sw=0000 a=   36 mw=0 aluout=0024
+ 775ns pc=00c ir=1016 mo=0009 sw=0000 a=   36 mw=0 aluout=002d
+ 780ns pc=00c ir=1016 mo=0009 sw=0000 a=   45 mw=0 aluout=0036
+ 785ns pc=00e ir=3014 mo=002d sw=0000 a=   45 mw=1 aluout=0000
+ 795ns pc=010 ir=2000 mo=0016 sw=0000 a=   45 mw=0 aluout=0000
+ 805ns pc=000 ir=0016 mo=0009 sw=0000 a=   45 mw=0 aluout=0009
+ 810ns pc=000 ir=0016 mo=0009 sw=0000 a=    9 mw=0 aluout=0009
+ 815ns pc=002 ir=401a mo=000a sw=0000 a=    9 mw=0 aluout=0000
+ 825ns pc=004 ir=5012 mo=2012 sw=0000 a=    9 mw=0 aluout=0000
+ 835ns pc=006 ir=1018 mo=0001 sw=0000 a=    9 mw=0 aluout=000a
+ 840ns pc=006 ir=1018 mo=0001 sw=0000 a=   10 mw=0 aluout=000b
+ 845ns pc=008 ir=3016 mo=000a sw=0000 a=   10 mw=1 aluout=0000
+ 855ns pc=00a ir=0014 mo=002d sw=0000 a=   10 mw=0 aluout=002d
+ 860ns pc=00a ir=0014 mo=002d sw=0000 a=   45 mw=0 aluout=002d
+ 865ns pc=00c ir=1016 mo=000a sw=0000 a=   45 mw=0 aluout=0037
+ 870ns pc=00c ir=1016 mo=000a sw=0000 a=   55 mw=0 aluout=0041
+ 875ns pc=00e ir=3014 mo=0037 sw=0000 a=   55 mw=1 aluout=0000
+ 885ns pc=010 ir=2000 mo=0016 sw=0000 a=   55 mw=0 aluout=0000
+ 895ns pc=000 ir=0016 mo=000a sw=0000 a=   55 mw=0 aluout=000a
+ 900ns pc=000 ir=0016 mo=000a sw=0000 a=   10 mw=0 aluout=000a
+ 905ns pc=002 ir=401a mo=000a sw=0000 a=   10 mw=0 aluout=4000
+ 910ns pc=002 ir=401a mo=000a sw=4000 a=   10 mw=0 aluout=4000
+ 915ns pc=004 ir=5012 mo=2012 sw=4000 a=   10 mw=0 aluout=0000
+ 925ns pc=012 ir=2012 mo=2012 sw=4000 a=   10 mw=0 aluout=0000</code></pre>
+<p>您可以清楚的看到，該程式在 870ns 時計算出了總合 SUM=55 的結果，這代表 mcu0bm.v 的設計完成了計算 1+...+10 的功能。</p>
+<h3 id="結語"><a href="#結語">結語</a></h3>
+<p>在上述實作中，採用區塊式設計的 mcu0bm.v 總共有 98 行，比起同樣功能的流程式設計 mcu0m.v 的 51 行多了將近一倍，而且程式的設計難度感覺高了不少，但是我們可以很清楚的掌握到整個設計的硬體結構，這是採用流程式設計所難以確定的。</p>
+<p>當然、由於筆者是「程式人員」，並非硬體設計人員，因此比較喜歡採用流程式的設計方式。不過採用了區塊式設計法設計出 mcu0bm.v 之後，也逐漸開始能理解這種「硬體導向」的設計方式，這大概是我在撰寫本程式時最大的收穫了。</p>
+<h1 id="雜誌訊息"><a href="#雜誌訊息">雜誌訊息</a></h1>
+<h2 id="讀者訂閱"><a href="#讀者訂閱">讀者訂閱</a></h2>
+<p>程式人雜誌是一個結合「開放原始碼與公益捐款活動」的雜誌，簡稱「開放公益雜誌」。開放公益雜誌本著「讀書做善事、寫書做公益」的精神，我們非常歡迎程式人認養專欄、或者捐出您的網誌，如果您願意成為本雜誌的專欄作家，請加入 <a href="https://www.facebook.com/groups/programmerMagazine/">程式人雜誌社團</a> 一同共襄盛舉。</p>
+<p>我們透過發行這本雜誌，希望讓大家可以讀到想讀的書，學到想學的技術，同時也讓寫作的朋友的作品能產生良好價值 – 那就是讓讀者根據雜誌的價值捐款給慈善團體。 讀雜誌做公益也不需要有壓力，您不需要每讀一本就急著去捐款，您可以讀了十本再捐，或者使用固定的月捐款方式，當成是雜誌訂閱費，或者是季捐款、一年捐一次等都 OK ! 甚至是單純當個讀者我們也都很歡迎！</p>
+<p>本雜誌每期參考價：NT 50 元，如果您喜歡本雜誌，請將書款捐贈公益團體。例如可捐贈給「羅慧夫顱顏基金會 彰化銀行(009) 帳號：5234-01-41778-800」。(若匯款要加註可用「程式人雜誌」五個字)</p>
+<h2 id="投稿須知"><a href="#投稿須知">投稿須知</a></h2>
+<p><em>給專欄寫作者：</em> 做公益不需要有壓力。如果您願意撰寫專欄，您可以輕鬆的寫，如果當月的稿件出不來，我們會安排其他稿件上場。</p>
+<p><em>給網誌捐贈者：</em> 如果您沒時間寫專欄或投稿，沒關係，只要將您的網誌以 [創作共用的「姓名標示、非商業性、相同方式分享」授權] 並通知我們，我們會自動從中選取需要的文章進行編輯，放入適當的雜誌當中出刊。</p>
+<p><em>給文章投稿者：</em> 程式人雜誌非常歡迎您加入作者的行列，如果您想撰寫任何文章或投稿，請用 markdown 或 LibreOffice 編輯好您的稿件，並於每個月 25 日前投稿到<a href="https://www.facebook.com/groups/programmerMagazine/">程式人雜誌社團</a> 的檔案區，我們會盡可能將稿件編入隔月1號出版程式人雜誌當中，也歡迎您到社團中與我們一同討論。</p>
+<p>如果您要投稿給程式人雜誌，我們最希望的格式是採用 markdown 的格式撰寫，然後將所有檔按壓縮為 zip 上傳到社團檔案區給我們， 如您想學習 markdown 的撰寫出版方式，可以參考 <a href="https://dl.dropboxusercontent.com/u/101584453/pmag/201304/htm/video1.html">看影片學 markdown 編輯出版流程</a> 一文。</p>
+<p>如果您無法採用 markdown 的方式撰寫，也可以直接給我們您的稿件，像是 MS. Word 的 doc 檔或 LibreOffice 的 odt 檔都可以，我們 會將這些稿件改寫為 markdown 之後編入雜誌當中。</p>
+<h2 id="參與編輯"><a href="#參與編輯">參與編輯</a></h2>
+<p>您也可以擔任程式人雜誌的編輯，甚至創造一個全新的公益雜誌，我們誠摯的邀請您加入「開放公益出版」的行列，如果您想擔任編輯或創造新雜誌，也歡迎到 <a href="https://www.facebook.com/groups/programmerMagazine/">程式人雜誌社團</a> 來與我們討論相關事宜。</p>
+<h2 id="公益資訊"><a href="#公益資訊">公益資訊</a></h2>
+<table>
+<col width="22%" />
+<col width="20%" />
+<col width="28%" />
+<col width="28%" />
+<thead>
+<tr class="header">
+<th align="left">公益團體</th>
+<th align="left">聯絡資訊</th>
+<th align="left">服務對象</th>
+<th align="left">捐款帳號</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">財團法人羅慧夫顱顏基金會</td>
+<td align="left"><a href="http://www.nncf.org/">http://www.nncf.org/</a> <BR/> <script type="text/javascript">
+<!--
+h='&#110;&#110;&#x63;&#102;&#46;&#x6f;&#114;&#x67;';a='&#64;';n='&#108;&#x79;&#110;&#110;';e=n+a+h;
+document.write('<a h'+'ref'+'="ma'+'ilto'+':'+e+'">'+e+'<\/'+'a'+'>');
+// -->
+</script><noscript>&#108;&#x79;&#110;&#110;&#32;&#x61;&#116;&#32;&#110;&#110;&#x63;&#102;&#32;&#100;&#x6f;&#116;&#32;&#x6f;&#114;&#x67;</noscript> <BR/> 02-27190408分機 232</td>
+<td align="left">顱顏患者 (如唇顎裂、小耳症或其他罕見顱顏缺陷）</td>
+<td align="left">銀行：009彰化銀行民生分行<BR/> 帳號：5234-01-41778-800</td>
+</tr>
+<tr class="even">
+<td align="left">社團法人台灣省兒童少年成長協會</td>
+<td align="left"><a href="http://www.cyga.org/">http://www.cyga.org/</a> <BR/> <script type="text/javascript">
+<!--
+h='&#x67;&#x6d;&#x61;&#x69;&#108;&#46;&#x63;&#x6f;&#x6d;';a='&#64;';n='&#x63;&#x79;&#x67;&#x61;&#x39;&#x39;';e=n+a+h;
+document.write('<a h'+'ref'+'="ma'+'ilto'+':'+e+'">'+e+'<\/'+'a'+'>');
+// -->
+</script><noscript>&#x63;&#x79;&#x67;&#x61;&#x39;&#x39;&#32;&#x61;&#116;&#32;&#x67;&#x6d;&#x61;&#x69;&#108;&#32;&#100;&#x6f;&#116;&#32;&#x63;&#x6f;&#x6d;</noscript> <BR/> 04-23058005</td>
+<td align="left">單親、隔代教養.弱勢及一般家庭之兒童青少年</td>
+<td align="left">銀行：新光銀行 <BR/> 戶名：台灣省兒童少年成長協會 <BR/> 帳號：103-0912-10-000212-0</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="footer">
+<a href="https://www.facebook.com/groups/programmerMagazine/">程式人雜誌</a> ，採用 <a href="http://creativecommons.org/licenses/by-sa/3.0/tw/ ">創作共用：姓名標示、相同方式分享</a> 授權，歡迎加入 <a href="https://www.facebook.com/groups/programmerMagazine/">雜誌社團</a>
+</div>
+</body>
+</html>

@@ -29,7 +29,7 @@ Inside 的訊息其實是轉貼自 36氪這個來自中國的網站， 36氪網�
 
 > I believe that in about fifty years' time it will be possible to programme computers, with a storage capacity of about 10^9, to make them play the imitation game so well that an average interrogator will not have more than 70 percent chance of making the right identification after five minutes of questioning. … I believe that at the end of the century the use of words and general educated opinion will have altered so much that one will be able to speak of machines thinking without expecting to be contradicted.
 
-在上文當中「圖靈」預估 15 年候電腦就可以讓不超過 70% 的人做正確的決定。換句話說，就是成功的欺騙過 30% 的人。於是「英國雷丁大學」就把這個預估當成圖靈測試的基準了。
+在上文當中「圖靈」預估 50 年後電腦就可以讓不超過 70% 的人做正確的決定。換句話說，就是成功的欺騙過 30% 的人。於是「英國雷丁大學」就把這個預估當成圖靈測試的基準了。
 
 但是、這只是圖靈的一個預估，並不代表圖靈測試就應該定為成功的欺騙過 30% 的人啊！ (而且這也不是學術界對圖靈測試的一個共識)。
 

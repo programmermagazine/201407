@@ -14,44 +14,44 @@ log(Xa) = a * log(X)
 
 另外，為了區別以 10 為基底及 [超越數 e (Euler's number)] 為基底的對數，數學習慣分別表示為 log(X)和 ln(X)，而計算機語言喜歡用 log10(X)及 log(X)表示。在日常應用方面，由於人類對外界感覺的魯鈍，也運用了許多對數的觀念，例如，聲音用分貝、地震用芮氏規模、天文觀測用星等，意思是訊號要變化很大，人們才會有所感覺。
 
-回歸主題，本文的要點為計算機如何計算對數值？在 [資料型態認識─浮點數 (single ＆ double)](http://4rdp.blogspot.tw/2010/03/signle-double.html)  一文提到，任何正實數可以表示為 $R=2^n \cdot u$ ， 是整數， $1\leq u <2$ ，那 
+回歸主題，本文的要點為計算機如何計算對數值？在 [資料型態認識─浮點數 (single ＆ double)](http://4rdp.blogspot.tw/2010/03/signle-double.html)  一文提到，任何正實數可以表示為  ![](../timg/3a12db105a53.jpg)  ， 是整數，  ![](../timg/497a59536d22.jpg)  ，那 
 
-$\ln R = \ln (2^n \cdot u) = n \ln(2) + \ln(u)$ 　
+ ![](../timg/c69c89d21102.jpg)  　
 
 接下來就要思考如何計算 ln(u)，這需要
 從等比級數和說起，令 Y 為等比級數和，將它減掉與 x 相乘的值等於 1，因此 Y 可得一個生成函數 1/(1-x)。
 
-$Y=1+x+x^2+x^3+...$ 　
+ ![](../timg/ec3d4cb1790e.jpg)  　
 
-$xY = x+x^2+x^3+x^4+...$ 　
+ ![](../timg/d39bca6afacb.jpg)  　
 
-$Y-xY = 1$ 　
+ ![](../timg/2d4b0997dbb8.jpg)  　
 
-$Y=\frac{1}{1-x} = 1+x+x^2+x^3+...., |x| < 1$ 　
+ ![](../timg/1c15e42c63bb.jpg)  　
 
 
 如果要讓等比級數和 Y 收斂等於生成函數，其要件為 |x|＜1。然後將 Y 對 x 積分可得，
 
-$\int Y dx = \int \frac{1}{1-x} dx = -\ln (1-x) + c = c+x+\frac{x^2}{2}+\frac{x^3}{3}+...$ 　
-$-\ln (1-x) = x+\frac{x^2}{2}+\frac{x^3}{3}+...$ 　
+ ![](../timg/7ad33f02e8f6.jpg)  　
+ ![](../timg/d07233e322b5.jpg)  　
 
 將上式 x 改以 -x 代入
 
-$\ln (1+x) =  x-\frac{x^2}{2}+\frac{x^3}{3}-\frac{x^4}{4}...$  　
+ ![](../timg/7182b36d1674.jpg)   　
 
 然後兩式合併
 
-$\ln \frac{1+x}{1-x} = \ln (1+x) - \ln (1-x) =  2x+2\frac{x^3}{3}+2\frac{x^5}{5}+...$  　
+ ![](../timg/319cc411587d.jpg)   　
 
-可能有人看到這裡，覺得越搞越複雜，其實這是計算機快速收斂最好的方法，因為計算 ln(1+x)將需要計算更多項次才能達到更好的精確度， **如果要精確到小數第 n 位，必須算到** $\color{Red} x^{2n+1}$ 。那如何求出 x，令
+可能有人看到這裡，覺得越搞越複雜，其實這是計算機快速收斂最好的方法，因為計算 ln(1+x)將需要計算更多項次才能達到更好的精確度， **如果要精確到小數第 n 位，必須算到**  ![](../timg/04c02199eaeb.jpg)  。那如何求出 x，令
 
-$\ln{u}=\ln{\frac{1+x}{1-x}}={2x(1+{\frac{x^{2}}{3}}+{\frac{x^{4}}{5}}+\cdots)}$  　
+ ![](../timg/72b13f3496ba.jpg)   　
 
-$u=\frac{1+x}{1-x}\Rightarrow\;x=\frac{u-1}{u+1}\;\;,1\leq u<2 \Rightarrow\;0\leq x <\frac{1}{3}$  　
+ ![](../timg/09532c614471.jpg)   　
 
 以上是超越數 e 為基底的對數計算，若想計算以 10 為基底的對數可以利用下列公式換算
 
-$\color{Red}\log{R}=\frac{\ln{R}}{\ln{10}}$ 　
+ ![](../timg/fcb535f02ee7.jpg)  　
 
 (本文來自「研發養成所」 Bridan 的網誌，原文網址為 <http://4rdp.blogspot.tw/2014/06/logarithm.html> ，由陳鍾誠編輯後納入程式人雜誌)
 

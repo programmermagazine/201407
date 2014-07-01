@@ -3,13 +3,11 @@ PANDOC = pandoc -s --webtex
 MD0 = $(patsubst %.md0,%.md,$(wildcard *.md0))
 # MD0 = $(wildcard *.md0)
 HTML = $(patsubst %.md,%.html,$(wildcard *.md)) $(patsubst %.md0,%.html,$(wildcard *.md0))
-MD   = title.md preface.md editor.md license.md focus.md focus1.md focus2.md focus3.md focus4.md \
-people.md people1.md people2.md \
-article.md article1.md article2.md article3.md article4.md article5.md info.md reflink.md9
+MD   = title.md preface.md editor.md license.md focus.md focus1.md focus2.md focus3.md science.md science1.md article.md article1.md article3.md article4.md article5.md info.md reflink.md9
 PARG = -c ../css/pmag.css -B header.htm -A footer.htm --toc --base-header-level=1 --toc-depth=2 
 PEPUB = --toc --base-header-level=1 --toc-depth=2 --epub-metadata=metadata.xml --epub-stylesheet=../css/pmag.css 
 EARG = --margin-top=16 --margin-bottom=16 --margin-left=20 --margin-right=20 \
---pretty-print --base-font-size=9 --font-size-mapping="7, 8, 9, 12, 14, 16, 20, 24" 
+--pretty-print --base-font-size=14 --font-size-mapping="10, 12, 14, 16, 20, 24, 28, 36" 
 # 
 # --embed-font-family --extra-css="../css/pmag.css" 
 RM = rm -f

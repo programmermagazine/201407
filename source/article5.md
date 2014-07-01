@@ -1,459 +1,326 @@
-## 開放電腦計畫 (9) – 16 位元微控制器 MCU0 的輸出入 -- 輪詢篇 (作者：陳鍾誠)
+## 開放電腦計畫 (12) – 使用區塊式方法設計 MCU0 的 Verilog 程式 (作者：陳鍾誠)
 
-在上一期當中，我們說明了 MCU0 這顆 16 位元處理器的中斷處理方式，文章網址如下：
+### 前言
 
-* [開放電腦計畫 (8) – 16 位元微控制器 MCU0 的中斷處理](https://dl.dropboxusercontent.com/u/101584453/pmag/201402/htm/article5.html)
+我們曾經在下列文章中設計出了 MCU0 迷你版這個只有六個指令的微控制器，整個實作只有 51 行。
 
-在本文中，我們將說明如何使用輪詢的方式實作了 MCU0 的鍵盤與文字輸出的函數。
+* [開放電腦計畫 (6) – 一顆只有 51 行 Verilog 程式碼的 16 位元處理器 MCU0](http://programmermagazine.github.io/201312/htm/article5.html)
 
-### MCU0 的中斷位元
+但是、上述程式雖然簡單，但卻是採用流程式的寫法。雖然、筆者不覺得流程式的寫法有甚麼特別的缺陷，但是對那些習慣採用硬體角度設計 Verilog 程式的人而言，似乎採用「區塊式的設計方式」才是正統，所以、筆者將於本文中採用「區塊式的方式重新設計」MCU0 迷你版，以便能學習「硬體設計者」的思考方式。
 
-在電腦中，進行輸出入所採用的方式，在指令上可分為「專用輸出入指令」與「記憶體映射輸出入」兩種，
-在本文中我們將用「記憶體映射輸出入」進行輸出入。
+### MCU0 迷你版的指令表
 
+為了方便讀者閱讀，不需要查閱前文，我們再次列出了 MCU0 迷你版的指令表如下：
 
+OP name		格式		意義
+-- ------	--------	---------
+0  LD		LD 	C		A = [C]
+1  ADD		ADD C		A = A + [C]
+2  JMP		JMP C		PC = C
+3  ST		ST  C		[C] = A
+4  CMP		CMP C		SW = A CMP [C]
+5  JEQ		JEQ C		if SW[30]=Z=1 then PC = C
 
-另外、進行輸出入的驅動方式，可分為「輪詢」與「中斷」兩種方式，本文將採用「輪詢」的方式實作。
+### MCU0 迷你版的區塊設計圖
 
-### MCU0 的輸出入實作方式
+在MCU0 迷你版裏，總共有三個暫存器，分別是 A, PC 與 SW，一個具有兩組讀取 (i1/d1, i2/d2) 與一組寫入的記憶體 (wi/wd)，還有一個算術邏輯單元 ALU，這個電路的設計圖如下。
 
-```verilog
-`define OP   IR[15:12] // 運算碼
-`define C    IR[11:0]  // 常數欄位
-`define SC8  $signed(IR[7:0]) // 常數欄位
-`define C4   IR[3:0]   // 常數欄位
-`define Ra   IR[7:4]   // Ra
-`define Rb   IR[3:0]   // Rb
-`define A    R[0]      // 累積器
-`define LR   R[1]      // 狀態暫存器
-`define SW   R[2]      // 狀態暫存器
-`define SP   R[3]      // 堆疊暫存器
-`define PC   R[4]      // 程式計數器
-`define N    `SW[15]   // 負號旗標
-`define Z    `SW[14]   // 零旗標
-`define I    `SW[3]    // 是否中斷中
-`define M    m[`C]     // 存取記憶體
+![圖、MCU0bm 的區塊設計圖](../img/mcu0bm.jpg)
 
-module mcu(input clock, input interrupt, input[2:0] irq);
-  parameter [3:0] LD=4'h0,ST=4'h1,ADD=4'h2,SUB=4'h3,MUL=4'h4,DIV=4'h5,AND=4'h6,OR=4'h7,XOR=4'h8,CMP=4'h9,JMP=4'hA,JEQ=4'hB, JLT=4'hC, JLE=4'hD, CALL=4'hE, OP8=4'hF;
-  parameter [3:0] LDI=4'h0, MOV=4'h2, PUSH=4'h3, POP=4'h4, SHL=4'h5, SHR=4'h6, ADDI=4'h7, SUBI=4'h8, NEG=4'h9, SWI=4'hA, NSW=4'hD, RET=4'hE, IRET=4'hF;
-  reg [15:0] IR;    // 指令暫存器
-  reg signed [15:0] R[0:4];
-  reg signed [15:0] pc0;
-  reg signed [15:0] m [0:4095]; // 內部的快取記憶體
-  integer i;
-  initial  // 初始化
-  begin
-    `PC = 0; // 將 PC 設為起動位址 0
-    `SW = 0;
-    $readmemh("mcu0io.hex", m);
-    for (i=0; i < 32; i=i+1) begin
-       $display("%x %x", i, m[i]);
+由於筆者不熟悉數位電路設計的繪圖軟體，因此就簡單的用 LibreOffice 的 Impress 繪製了上圖，純粹採用區塊表達法，並沒有使用標準的數位電路設計圖示。
+
+### 原始碼
+
+根據上圖，我們設計出了下列 Verilog 程式，您應該可以很清楚的找出程式與圖形之間的對應關係。
+
+```Verilog
+module memory(input w, input [11:0] wi, input [15:0] wd, input [11:0] i1, output [15:0] d1, input [11:0] i2, output [15:0] d2);
+  integer i;  
+  reg [7:0] m[0:2**12-1];
+  initial begin
+    $readmemh("mcu0m.hex", m);
+    for (i=0; i < 32; i=i+2) begin
+      $display("%x: %x", i, {m[i], m[i+1]});
     end
   end
-  
-  always @(posedge clock) begin // 在 clock 時脈的正邊緣時觸發
-    IR = m[`PC];                // 指令擷取階段：IR=m[PC], 2 個 Byte 的記憶體
-    pc0= `PC;                   // 儲存舊的 PC 值在 pc0 中。
-    `PC = `PC+1;                // 擷取完成，PC 前進到下一個指令位址
-    case (`OP)                  // 解碼、根據 OP 執行動作
-      LD: `A = `M;              // LD C
-      ST: `M = `A;              // ST C
-      ADD: `A = `A + `M;        // ADD C
-      SUB: `A = `A - `M;        // SUB C
-      MUL: `A = `A * `M;        // MUL C
-      DIV: `A = `A / `M;        // DIV C
-      AND: `A = `A & `M;        // AND C
-      OR : `A = `A | `M;        // OR  C
-      XOR: `A = `A ^ `M;        // XOR C
-      CMP: begin `N=(`A < `M); `Z=(`A==`M); end // CMP C
-      JMP: `PC = `C;            // JSUB C
-      JEQ: if (`Z) `PC=`C;      // JEQ C
-      JLT: if (`N) `PC=`C;      // JLT C
-      JLE: if (`N || `Z) `PC=`C;// JLE C
-      CALL:begin `LR = `PC; `PC = `C; end // CALL C
-      OP8: case (IR[11:8])      // OP8: 加長運算碼
-        LDI:  R[`Ra] = `C4;                         // LDI C
-        ADDI: R[`Ra] = R[`Ra] + `C4;                // ADDI C
-        SUBI: R[`Ra] = R[`Ra] - `C4;                // ADDI C
-        MOV:  R[`Ra] = R[`Rb];                      // MOV Ra, Rb
-        PUSH: begin `SP=`SP-1; m[`SP] = R[`Ra]; end // PUSH Ra
-        POP:  begin R[`Ra] = m[`SP]; `SP=`SP+1; end // POP  Ra
-        SHL:  R[`Ra] = R[`Ra] << `C4;               // SHL C
-        SHR:  R[`Ra] = R[`Ra] >> `C4;               // SHR C
-        SWI:  $display("SWI C8=%d A=%d", `SC8, `A); // SWI C
-        NEG:  R[`Ra] = ~R[`Ra];                     // NEG Ra
-        NSW:  begin `N=~`N; `Z=~`Z; end             // NSW  (negate N, Z)
-        RET:  `PC = `LR;                            // RET
-        IRET: begin `PC = `LR; `I = 0; end          // IRET
-        default: $display("op8=%d , not defined!", IR[11:8]);
-      endcase
+  assign d1 = {m[i1], m[i1+1]};
+  assign d2 = {m[i2], m[i2+1]};
+  always @(w) begin
+    if (w) {m[wi], m[wi+1]} = wd;
+  end
+endmodule
+
+module adder#(parameter W=16)(input [W-1:0] a, input [W-1:0] b, output [W-1:0] c);
+  assign c = a + b;
+endmodule
+
+module register#(parameter W=16)(input clock, w, input [W-1:0] ri, output [W-1:0] ro);
+reg [W-1:0] r;
+  always @(posedge clock) begin
+    if (w) r = ri;
+  end
+  assign ro=r;
+endmodule
+
+module alu(input [3:0] op, input [15:0] a, input [15:0] b, output reg [15:0] c);
+parameter [3:0] ZERO=4'h0, ADD=4'h1, CMP=4'he, APASS=4'hf;
+  always @(*) begin
+    case (op)
+      ADD: c = a+b;
+      CMP: begin c[15]=(a < b); c[14]=(a==b); c[13:0]=14'h0; end
+      APASS: c = a;
+      default: c = 0;
     endcase
-    // 印出 PC, IR, SW, A 等暫存器值以供觀察
-    $display("%4dns PC=%x IR=%x, SW=%x, A=%d SP=%x LR=%x", $stime, pc0, IR, `SW, `A, `SP, `LR);
-    if (!`I && interrupt) begin
-      `I = 1;
-      `LR = `PC;
-      `PC = irq;
-    end    
   end
 endmodule
 
-module keyboard;
-reg [7:0] ch[0:20];
-reg [7:0] i;
-initial begin
-  i=0;
-  {ch[0],ch[1],ch[2],ch[3],ch[4],ch[5],ch[6],ch[7],ch[8],ch[9],ch[10],ch[11],ch[12],ch[13]} = "hello verilog!";
-  main.mcu0.m[16'h07F0] = 0;
-  main.mcu0.m[16'h07F1] = 0;
-end
-
-always #20 begin 
-  if (main.mcu0.m[16'h07F0] == 0) begin
-    main.mcu0.m[16'h07F1] = {8'h0, ch[i]};
-    main.mcu0.m[16'h07F0] = 1;
-    $display("key = %c", ch[i]);
-    i = i+1;
-  end
-end 
-
+module mux#(parameter W=16)(input sel, input [W-1:0] i0, i1, output [W-1:0] o);
+  assign o=(sel)?i1:i0;
 endmodule
 
-module screen;
-reg [7:0] ch;
-initial begin
-  main.mcu0.m[16'h07F2] = 0;
-  main.mcu0.m[16'h07F3] = 0;
-end
-always #10 begin
-  if (main.mcu0.m[16'h07F2] == 1) begin
-    ch = main.mcu0.m[16'h07F3][7:0];
-    $display("screen %c", ch);
-    main.mcu0.m[16'h07F2] = 0;
+`define OP ir[15:12]
+`define C  ir[11:0]
+`define N  SW.r[15]
+`define Z  SW.r[14]
+
+module mcu(input clock);
+  parameter [3:0] LD=4'h0,ADD=4'h1,JMP=4'h2,ST=4'h3,CMP=4'h4,JEQ=4'h5;
+  reg  mw, aw, pcmux, sww;
+  reg [3:0] aluop;
+  wire [11:0] pco, pci, pcnext;
+  wire [15:0] aluout, ao, swo, ir, mo;
+  register#(.W(12)) PC(clock, 1, pci, pco);
+  adder#(.W(12)) adder0(2, pco, pcnext);
+  memory mem(mw, `C, ao, pco[11:0], ir, `C, mo);
+  register#(.W(16)) A(~clock, aw, aluout, ao);
+  register#(.W(16)) SW(~clock, sww, aluout, swo);
+  alu alu0(aluop, mo, ao, aluout);
+  mux#(.W(12)) muxpc(pcmux, pcnext, `C, pci);
+
+  initial begin 
+    PC.r = 0; SW.r = 0; mw = 0; aw = 0; pcmux=0; sww=0; aluop=alu0.ZERO;
   end
-end 
+
+  always @(ir or mo or A.r) begin
+    mw = 0;
+    aw = 0;
+    sww = 0;
+    pcmux = 0;
+    aluop = alu0.ZERO;
+    case (`OP)
+      LD: begin aw=1; aluop=alu0.APASS; end     // LD C
+      ST: mw=1;                                 // ST C
+      JMP: pcmux=1;                             // JMP C
+      JEQ: if (`Z) pcmux=1;                     // JEQ C
+      CMP: begin sww=1; aluop = alu0.CMP; end   // CMP C
+      ADD: begin aw=1; aluop=alu0.ADD; end      // ADD C
+    endcase
+  end
 endmodule
 
-module main;                // 測試程式開始
-reg clock;                  // 時脈 clock 變數
-reg interrupt;
-reg [2:0] irq;
+module main;         // 測試程式開始
+reg clock;           // 時脈 clock 變數
 
-mcu mcu0(clock, interrupt, irq); // 宣告 cpu0mc 處理器
-keyboard kb0();
-screen   sc0();
+mcu mcu0(clock);
 
-initial begin
-  clock = 0;          // 一開始 clock 設定為 0
-  interrupt = 0;
-  irq = 2;
+initial begin 
+  clock = 0;
+  $monitor("%4dns pc=%x ir=%x mo=%x sw=%x a=%d mw=%b aluout=%x", $stime, mcu0.PC.r, mcu0.ir, mcu0.mo, mcu0.SW.r, mcu0.A.r, mcu0.mw, mcu0.aluout);
+  #1000 $finish;
 end
-always #10 clock=~clock;    // 每隔 10ns 反相，時脈週期為 20ns
-
-initial #4000 $finish;      // 停止測試。
-
+always #5 begin 
+  clock=~clock;    // 每隔 5ns 反相，時脈週期為 10ns
+end  
 endmodule
 ```
 
-### 輸入機器碼與組合語言
+### 輸入的機器碼 mcu0m.hex
+
+為了測試上述程式，我們同樣採用了計算 `SUM=1+2+...+10` 的這個程式作為輸入，以下是機器碼與對應的組合語言程式。
 
 ```
-07F0  // 00    WAITK:  LD    0x7F0   ; wait keyboard
-9010  // 01            CMP   K0
-B000  // 02            JEQ   WAIT
-07F1  // 03            LD    0x7F1   ; read key
-1011  // 04            ST    KEY
-0010  // 05            LD    K0
-17F0  // 06            ST    0x7F0   ; release keyboard
-07F2  // 07    WAITS:  LD    0x7F2   ; wait screen
-0010  // 08            CMP   K0
-B007  // 09            JEQ   WAITS
-0011  // 0A            LD    KEY     ; print key
-17F3  // 0B            ST    0x7F3
-F001  // 0C            LDI   1
-17F2  // 0D            ST    0x7F2   ; eanble screen
-A000  // 0E            JMP   WAIT
-0000  // 0F
-0000  // 10    K0:     WORD  0
-0000  // 11    KEY:    WORD  0
+00 16  // 00    LOOP:   LD    I    
+40 1A  // 02            CMP   N    
+50 12  // 04            JEQ   EXIT
+10 18  // 06            ADD   K1    
+30 16  // 08            ST    I    
+00 14  // 0A            LD    SUM    
+10 16  // 0C            ADD   I    
+30 14  // 0E            ST    SUM    
+20 00  // 10            JMP   LOOP
+20 12  // 12    EXIT:   JMP   EXIT
+00 00  // 14    SUM:    WORD  0    
+00 00  // 16    I:      WORD  0    
+00 01  // 18    K1:     WORD  1    
+00 0A  // 1A    N:      WORD  10    
 ```
 
 ### 執行結果
 
-```
-D:\Dropbox\Public\web\oc\code\mcu0>iverilog -o mcu0io mcu0io.v
+編寫完成之後，我們就可以測試整個 mcu0bm.v 程式了，其執行結果如下所示。
 
-D:\Dropbox\Public\web\oc\code\mcu0>vvp mcu0io
-WARNING: mcu0io.v:29: $readmemh(mcu0io.hex): Not enough words in the file for th
-e requested range [0:4095].
-00000000 07f0
-00000001 9010
-00000002 b000
-00000003 07f1
-00000004 1011
-00000005 0010
-00000006 17f0
-00000007 07f2
-00000008 0010
-00000009 b007
-0000000a 0011
-0000000b 17f3
-0000000c f001
-0000000d 17f2
-0000000e a000
-0000000f 0000
-00000010 0000
-00000011 0000
-00000012 xxxx
-00000013 xxxx
-00000014 xxxx
-00000015 xxxx
-00000016 xxxx
-00000017 xxxx
-00000018 xxxx
-00000019 xxxx
-0000001a xxxx
-0000001b xxxx
-0000001c xxxx
-0000001d xxxx
-0000001e xxxx
-0000001f xxxx
-  10ns PC=0000 IR=07f0, SW=0000, A=    0 SP=xxxx LR=xxxx
-key = h
-  30ns PC=0001 IR=9010, SW=4000, A=    0 SP=xxxx LR=xxxx
-  50ns PC=0002 IR=b000, SW=4000, A=    0 SP=xxxx LR=xxxx
-  70ns PC=0000 IR=07f0, SW=4000, A=    1 SP=xxxx LR=xxxx
-  90ns PC=0001 IR=9010, SW=0000, A=    1 SP=xxxx LR=xxxx
- 110ns PC=0002 IR=b000, SW=0000, A=    1 SP=xxxx LR=xxxx
- 130ns PC=0003 IR=07f1, SW=0000, A=  104 SP=xxxx LR=xxxx
- 150ns PC=0004 IR=1011, SW=0000, A=  104 SP=xxxx LR=xxxx
- 170ns PC=0005 IR=0010, SW=0000, A=    0 SP=xxxx LR=xxxx
- 190ns PC=0006 IR=17f0, SW=0000, A=    0 SP=xxxx LR=xxxx
-key = e
- 210ns PC=0007 IR=07f2, SW=0000, A=    0 SP=xxxx LR=xxxx
- 230ns PC=0008 IR=0010, SW=0000, A=    0 SP=xxxx LR=xxxx
- 250ns PC=0009 IR=b007, SW=0000, A=    0 SP=xxxx LR=xxxx
- 270ns PC=000a IR=0011, SW=0000, A=  104 SP=xxxx LR=xxxx
- 290ns PC=000b IR=17f3, SW=0000, A=  104 SP=xxxx LR=xxxx
- 310ns PC=000c IR=f001, SW=0000, A=    1 SP=xxxx LR=xxxx
- 330ns PC=000d IR=17f2, SW=0000, A=    1 SP=xxxx LR=xxxx
-screen h
- 350ns PC=000e IR=a000, SW=0000, A=    1 SP=xxxx LR=xxxx
- 370ns PC=0000 IR=07f0, SW=0000, A=    1 SP=xxxx LR=xxxx
- 390ns PC=0001 IR=9010, SW=0000, A=    1 SP=xxxx LR=xxxx
- 410ns PC=0002 IR=b000, SW=0000, A=    1 SP=xxxx LR=xxxx
- 430ns PC=0003 IR=07f1, SW=0000, A=  101 SP=xxxx LR=xxxx
- 450ns PC=0004 IR=1011, SW=0000, A=  101 SP=xxxx LR=xxxx
- 470ns PC=0005 IR=0010, SW=0000, A=    0 SP=xxxx LR=xxxx
- 490ns PC=0006 IR=17f0, SW=0000, A=    0 SP=xxxx LR=xxxx
-key = l
- 510ns PC=0007 IR=07f2, SW=0000, A=    0 SP=xxxx LR=xxxx
- 530ns PC=0008 IR=0010, SW=0000, A=    0 SP=xxxx LR=xxxx
- 550ns PC=0009 IR=b007, SW=0000, A=    0 SP=xxxx LR=xxxx
- 570ns PC=000a IR=0011, SW=0000, A=  101 SP=xxxx LR=xxxx
- 590ns PC=000b IR=17f3, SW=0000, A=  101 SP=xxxx LR=xxxx
- 610ns PC=000c IR=f001, SW=0000, A=    1 SP=xxxx LR=xxxx
- 630ns PC=000d IR=17f2, SW=0000, A=    1 SP=xxxx LR=xxxx
-screen e
- 650ns PC=000e IR=a000, SW=0000, A=    1 SP=xxxx LR=xxxx
- 670ns PC=0000 IR=07f0, SW=0000, A=    1 SP=xxxx LR=xxxx
- 690ns PC=0001 IR=9010, SW=0000, A=    1 SP=xxxx LR=xxxx
- 710ns PC=0002 IR=b000, SW=0000, A=    1 SP=xxxx LR=xxxx
- 730ns PC=0003 IR=07f1, SW=0000, A=  108 SP=xxxx LR=xxxx
- 750ns PC=0004 IR=1011, SW=0000, A=  108 SP=xxxx LR=xxxx
- 770ns PC=0005 IR=0010, SW=0000, A=    0 SP=xxxx LR=xxxx
- 790ns PC=0006 IR=17f0, SW=0000, A=    0 SP=xxxx LR=xxxx
-key = l
- 810ns PC=0007 IR=07f2, SW=0000, A=    0 SP=xxxx LR=xxxx
- 830ns PC=0008 IR=0010, SW=0000, A=    0 SP=xxxx LR=xxxx
- 850ns PC=0009 IR=b007, SW=0000, A=    0 SP=xxxx LR=xxxx
- 870ns PC=000a IR=0011, SW=0000, A=  108 SP=xxxx LR=xxxx
- 890ns PC=000b IR=17f3, SW=0000, A=  108 SP=xxxx LR=xxxx
- 910ns PC=000c IR=f001, SW=0000, A=    1 SP=xxxx LR=xxxx
- 930ns PC=000d IR=17f2, SW=0000, A=    1 SP=xxxx LR=xxxx
-screen l
- 950ns PC=000e IR=a000, SW=0000, A=    1 SP=xxxx LR=xxxx
- 970ns PC=0000 IR=07f0, SW=0000, A=    1 SP=xxxx LR=xxxx
- 990ns PC=0001 IR=9010, SW=0000, A=    1 SP=xxxx LR=xxxx
-1010ns PC=0002 IR=b000, SW=0000, A=    1 SP=xxxx LR=xxxx
-1030ns PC=0003 IR=07f1, SW=0000, A=  108 SP=xxxx LR=xxxx
-1050ns PC=0004 IR=1011, SW=0000, A=  108 SP=xxxx LR=xxxx
-1070ns PC=0005 IR=0010, SW=0000, A=    0 SP=xxxx LR=xxxx
-1090ns PC=0006 IR=17f0, SW=0000, A=    0 SP=xxxx LR=xxxx
-key = o
-1110ns PC=0007 IR=07f2, SW=0000, A=    0 SP=xxxx LR=xxxx
-1130ns PC=0008 IR=0010, SW=0000, A=    0 SP=xxxx LR=xxxx
-1150ns PC=0009 IR=b007, SW=0000, A=    0 SP=xxxx LR=xxxx
-1170ns PC=000a IR=0011, SW=0000, A=  108 SP=xxxx LR=xxxx
-1190ns PC=000b IR=17f3, SW=0000, A=  108 SP=xxxx LR=xxxx
-1210ns PC=000c IR=f001, SW=0000, A=    1 SP=xxxx LR=xxxx
-1230ns PC=000d IR=17f2, SW=0000, A=    1 SP=xxxx LR=xxxx
-screen l
-1250ns PC=000e IR=a000, SW=0000, A=    1 SP=xxxx LR=xxxx
-1270ns PC=0000 IR=07f0, SW=0000, A=    1 SP=xxxx LR=xxxx
-1290ns PC=0001 IR=9010, SW=0000, A=    1 SP=xxxx LR=xxxx
-1310ns PC=0002 IR=b000, SW=0000, A=    1 SP=xxxx LR=xxxx
-1330ns PC=0003 IR=07f1, SW=0000, A=  111 SP=xxxx LR=xxxx
-1350ns PC=0004 IR=1011, SW=0000, A=  111 SP=xxxx LR=xxxx
-1370ns PC=0005 IR=0010, SW=0000, A=    0 SP=xxxx LR=xxxx
-1390ns PC=0006 IR=17f0, SW=0000, A=    0 SP=xxxx LR=xxxx
-key =
-1410ns PC=0007 IR=07f2, SW=0000, A=    0 SP=xxxx LR=xxxx
-1430ns PC=0008 IR=0010, SW=0000, A=    0 SP=xxxx LR=xxxx
-1450ns PC=0009 IR=b007, SW=0000, A=    0 SP=xxxx LR=xxxx
-1470ns PC=000a IR=0011, SW=0000, A=  111 SP=xxxx LR=xxxx
-1490ns PC=000b IR=17f3, SW=0000, A=  111 SP=xxxx LR=xxxx
-1510ns PC=000c IR=f001, SW=0000, A=    1 SP=xxxx LR=xxxx
-1530ns PC=000d IR=17f2, SW=0000, A=    1 SP=xxxx LR=xxxx
-screen o
-1550ns PC=000e IR=a000, SW=0000, A=    1 SP=xxxx LR=xxxx
-1570ns PC=0000 IR=07f0, SW=0000, A=    1 SP=xxxx LR=xxxx
-1590ns PC=0001 IR=9010, SW=0000, A=    1 SP=xxxx LR=xxxx
-1610ns PC=0002 IR=b000, SW=0000, A=    1 SP=xxxx LR=xxxx
-1630ns PC=0003 IR=07f1, SW=0000, A=   32 SP=xxxx LR=xxxx
-1650ns PC=0004 IR=1011, SW=0000, A=   32 SP=xxxx LR=xxxx
-1670ns PC=0005 IR=0010, SW=0000, A=    0 SP=xxxx LR=xxxx
-1690ns PC=0006 IR=17f0, SW=0000, A=    0 SP=xxxx LR=xxxx
-key = v
-1710ns PC=0007 IR=07f2, SW=0000, A=    0 SP=xxxx LR=xxxx
-1730ns PC=0008 IR=0010, SW=0000, A=    0 SP=xxxx LR=xxxx
-1750ns PC=0009 IR=b007, SW=0000, A=    0 SP=xxxx LR=xxxx
-1770ns PC=000a IR=0011, SW=0000, A=   32 SP=xxxx LR=xxxx
-1790ns PC=000b IR=17f3, SW=0000, A=   32 SP=xxxx LR=xxxx
-1810ns PC=000c IR=f001, SW=0000, A=    1 SP=xxxx LR=xxxx
-1830ns PC=000d IR=17f2, SW=0000, A=    1 SP=xxxx LR=xxxx
-screen
-1850ns PC=000e IR=a000, SW=0000, A=    1 SP=xxxx LR=xxxx
-1870ns PC=0000 IR=07f0, SW=0000, A=    1 SP=xxxx LR=xxxx
-1890ns PC=0001 IR=9010, SW=0000, A=    1 SP=xxxx LR=xxxx
-1910ns PC=0002 IR=b000, SW=0000, A=    1 SP=xxxx LR=xxxx
-1930ns PC=0003 IR=07f1, SW=0000, A=  118 SP=xxxx LR=xxxx
-1950ns PC=0004 IR=1011, SW=0000, A=  118 SP=xxxx LR=xxxx
-1970ns PC=0005 IR=0010, SW=0000, A=    0 SP=xxxx LR=xxxx
-1990ns PC=0006 IR=17f0, SW=0000, A=    0 SP=xxxx LR=xxxx
-key = e
-2010ns PC=0007 IR=07f2, SW=0000, A=    0 SP=xxxx LR=xxxx
-2030ns PC=0008 IR=0010, SW=0000, A=    0 SP=xxxx LR=xxxx
-2050ns PC=0009 IR=b007, SW=0000, A=    0 SP=xxxx LR=xxxx
-2070ns PC=000a IR=0011, SW=0000, A=  118 SP=xxxx LR=xxxx
-2090ns PC=000b IR=17f3, SW=0000, A=  118 SP=xxxx LR=xxxx
-2110ns PC=000c IR=f001, SW=0000, A=    1 SP=xxxx LR=xxxx
-2130ns PC=000d IR=17f2, SW=0000, A=    1 SP=xxxx LR=xxxx
-screen v
-2150ns PC=000e IR=a000, SW=0000, A=    1 SP=xxxx LR=xxxx
-2170ns PC=0000 IR=07f0, SW=0000, A=    1 SP=xxxx LR=xxxx
-2190ns PC=0001 IR=9010, SW=0000, A=    1 SP=xxxx LR=xxxx
-2210ns PC=0002 IR=b000, SW=0000, A=    1 SP=xxxx LR=xxxx
-2230ns PC=0003 IR=07f1, SW=0000, A=  101 SP=xxxx LR=xxxx
-2250ns PC=0004 IR=1011, SW=0000, A=  101 SP=xxxx LR=xxxx
-2270ns PC=0005 IR=0010, SW=0000, A=    0 SP=xxxx LR=xxxx
-2290ns PC=0006 IR=17f0, SW=0000, A=    0 SP=xxxx LR=xxxx
-key = r
-2310ns PC=0007 IR=07f2, SW=0000, A=    0 SP=xxxx LR=xxxx
-2330ns PC=0008 IR=0010, SW=0000, A=    0 SP=xxxx LR=xxxx
-2350ns PC=0009 IR=b007, SW=0000, A=    0 SP=xxxx LR=xxxx
-2370ns PC=000a IR=0011, SW=0000, A=  101 SP=xxxx LR=xxxx
-2390ns PC=000b IR=17f3, SW=0000, A=  101 SP=xxxx LR=xxxx
-2410ns PC=000c IR=f001, SW=0000, A=    1 SP=xxxx LR=xxxx
-2430ns PC=000d IR=17f2, SW=0000, A=    1 SP=xxxx LR=xxxx
-screen e
-2450ns PC=000e IR=a000, SW=0000, A=    1 SP=xxxx LR=xxxx
-2470ns PC=0000 IR=07f0, SW=0000, A=    1 SP=xxxx LR=xxxx
-2490ns PC=0001 IR=9010, SW=0000, A=    1 SP=xxxx LR=xxxx
-2510ns PC=0002 IR=b000, SW=0000, A=    1 SP=xxxx LR=xxxx
-2530ns PC=0003 IR=07f1, SW=0000, A=  114 SP=xxxx LR=xxxx
-2550ns PC=0004 IR=1011, SW=0000, A=  114 SP=xxxx LR=xxxx
-2570ns PC=0005 IR=0010, SW=0000, A=    0 SP=xxxx LR=xxxx
-2590ns PC=0006 IR=17f0, SW=0000, A=    0 SP=xxxx LR=xxxx
-key = i
-2610ns PC=0007 IR=07f2, SW=0000, A=    0 SP=xxxx LR=xxxx
-2630ns PC=0008 IR=0010, SW=0000, A=    0 SP=xxxx LR=xxxx
-2650ns PC=0009 IR=b007, SW=0000, A=    0 SP=xxxx LR=xxxx
-2670ns PC=000a IR=0011, SW=0000, A=  114 SP=xxxx LR=xxxx
-2690ns PC=000b IR=17f3, SW=0000, A=  114 SP=xxxx LR=xxxx
-2710ns PC=000c IR=f001, SW=0000, A=    1 SP=xxxx LR=xxxx
-2730ns PC=000d IR=17f2, SW=0000, A=    1 SP=xxxx LR=xxxx
-screen r
-2750ns PC=000e IR=a000, SW=0000, A=    1 SP=xxxx LR=xxxx
-2770ns PC=0000 IR=07f0, SW=0000, A=    1 SP=xxxx LR=xxxx
-2790ns PC=0001 IR=9010, SW=0000, A=    1 SP=xxxx LR=xxxx
-2810ns PC=0002 IR=b000, SW=0000, A=    1 SP=xxxx LR=xxxx
-2830ns PC=0003 IR=07f1, SW=0000, A=  105 SP=xxxx LR=xxxx
-2850ns PC=0004 IR=1011, SW=0000, A=  105 SP=xxxx LR=xxxx
-2870ns PC=0005 IR=0010, SW=0000, A=    0 SP=xxxx LR=xxxx
-2890ns PC=0006 IR=17f0, SW=0000, A=    0 SP=xxxx LR=xxxx
-key = l
-2910ns PC=0007 IR=07f2, SW=0000, A=    0 SP=xxxx LR=xxxx
-2930ns PC=0008 IR=0010, SW=0000, A=    0 SP=xxxx LR=xxxx
-2950ns PC=0009 IR=b007, SW=0000, A=    0 SP=xxxx LR=xxxx
-2970ns PC=000a IR=0011, SW=0000, A=  105 SP=xxxx LR=xxxx
-2990ns PC=000b IR=17f3, SW=0000, A=  105 SP=xxxx LR=xxxx
-3010ns PC=000c IR=f001, SW=0000, A=    1 SP=xxxx LR=xxxx
-3030ns PC=000d IR=17f2, SW=0000, A=    1 SP=xxxx LR=xxxx
-screen i
-3050ns PC=000e IR=a000, SW=0000, A=    1 SP=xxxx LR=xxxx
-3070ns PC=0000 IR=07f0, SW=0000, A=    1 SP=xxxx LR=xxxx
-3090ns PC=0001 IR=9010, SW=0000, A=    1 SP=xxxx LR=xxxx
-3110ns PC=0002 IR=b000, SW=0000, A=    1 SP=xxxx LR=xxxx
-3130ns PC=0003 IR=07f1, SW=0000, A=  108 SP=xxxx LR=xxxx
-3150ns PC=0004 IR=1011, SW=0000, A=  108 SP=xxxx LR=xxxx
-3170ns PC=0005 IR=0010, SW=0000, A=    0 SP=xxxx LR=xxxx
-3190ns PC=0006 IR=17f0, SW=0000, A=    0 SP=xxxx LR=xxxx
-key = o
-3210ns PC=0007 IR=07f2, SW=0000, A=    0 SP=xxxx LR=xxxx
-3230ns PC=0008 IR=0010, SW=0000, A=    0 SP=xxxx LR=xxxx
-3250ns PC=0009 IR=b007, SW=0000, A=    0 SP=xxxx LR=xxxx
-3270ns PC=000a IR=0011, SW=0000, A=  108 SP=xxxx LR=xxxx
-3290ns PC=000b IR=17f3, SW=0000, A=  108 SP=xxxx LR=xxxx
-3310ns PC=000c IR=f001, SW=0000, A=    1 SP=xxxx LR=xxxx
-3330ns PC=000d IR=17f2, SW=0000, A=    1 SP=xxxx LR=xxxx
-screen l
-3350ns PC=000e IR=a000, SW=0000, A=    1 SP=xxxx LR=xxxx
-3370ns PC=0000 IR=07f0, SW=0000, A=    1 SP=xxxx LR=xxxx
-3390ns PC=0001 IR=9010, SW=0000, A=    1 SP=xxxx LR=xxxx
-3410ns PC=0002 IR=b000, SW=0000, A=    1 SP=xxxx LR=xxxx
-3430ns PC=0003 IR=07f1, SW=0000, A=  111 SP=xxxx LR=xxxx
-3450ns PC=0004 IR=1011, SW=0000, A=  111 SP=xxxx LR=xxxx
-3470ns PC=0005 IR=0010, SW=0000, A=    0 SP=xxxx LR=xxxx
-3490ns PC=0006 IR=17f0, SW=0000, A=    0 SP=xxxx LR=xxxx
-key = g
-3510ns PC=0007 IR=07f2, SW=0000, A=    0 SP=xxxx LR=xxxx
-3530ns PC=0008 IR=0010, SW=0000, A=    0 SP=xxxx LR=xxxx
-3550ns PC=0009 IR=b007, SW=0000, A=    0 SP=xxxx LR=xxxx
-3570ns PC=000a IR=0011, SW=0000, A=  111 SP=xxxx LR=xxxx
-3590ns PC=000b IR=17f3, SW=0000, A=  111 SP=xxxx LR=xxxx
-3610ns PC=000c IR=f001, SW=0000, A=    1 SP=xxxx LR=xxxx
-3630ns PC=000d IR=17f2, SW=0000, A=    1 SP=xxxx LR=xxxx
-screen o
-3650ns PC=000e IR=a000, SW=0000, A=    1 SP=xxxx LR=xxxx
-3670ns PC=0000 IR=07f0, SW=0000, A=    1 SP=xxxx LR=xxxx
-3690ns PC=0001 IR=9010, SW=0000, A=    1 SP=xxxx LR=xxxx
-3710ns PC=0002 IR=b000, SW=0000, A=    1 SP=xxxx LR=xxxx
-3730ns PC=0003 IR=07f1, SW=0000, A=  103 SP=xxxx LR=xxxx
-3750ns PC=0004 IR=1011, SW=0000, A=  103 SP=xxxx LR=xxxx
-3770ns PC=0005 IR=0010, SW=0000, A=    0 SP=xxxx LR=xxxx
-3790ns PC=0006 IR=17f0, SW=0000, A=    0 SP=xxxx LR=xxxx
-key = !
-3810ns PC=0007 IR=07f2, SW=0000, A=    0 SP=xxxx LR=xxxx
-3830ns PC=0008 IR=0010, SW=0000, A=    0 SP=xxxx LR=xxxx
-3850ns PC=0009 IR=b007, SW=0000, A=    0 SP=xxxx LR=xxxx
-3870ns PC=000a IR=0011, SW=0000, A=  103 SP=xxxx LR=xxxx
-3890ns PC=000b IR=17f3, SW=0000, A=  103 SP=xxxx LR=xxxx
-3910ns PC=000c IR=f001, SW=0000, A=    1 SP=xxxx LR=xxxx
-3930ns PC=000d IR=17f2, SW=0000, A=    1 SP=xxxx LR=xxxx
-screen g
-3950ns PC=000e IR=a000, SW=0000, A=    1 SP=xxxx LR=xxxx
-3970ns PC=0000 IR=07f0, SW=0000, A=    1 SP=xxxx LR=xxxx
-3990ns PC=0001 IR=9010, SW=0000, A=    1 SP=xxxx LR=xxxx
 ```
+C:\Dropbox\Public\web\oc\code\mcu0>iverilog mcu0bm.v -o mcu0bm
+
+C:\Dropbox\Public\web\oc\code\mcu0>vvp mcu0bm
+WARNING: mcu0bm.v:5: $readmemh(mcu0m.hex): Not enough words in the file for the
+requested range [0:4095].
+00000000: 0016
+00000002: 401a
+00000004: 5012
+00000006: 1018
+00000008: 3016
+0000000a: 0014
+0000000c: 1016
+0000000e: 3014
+00000010: 2000
+00000012: 2012
+00000014: 0000
+00000016: 0000
+00000018: 0001
+0000001a: 000a
+0000001c: xxxx
+0000001e: xxxx
+   0ns pc=000 ir=0016 mo=0000 sw=0000 a=    0 mw=0 aluout=0000
+   5ns pc=002 ir=401a mo=000a sw=0000 a=    0 mw=0 aluout=0000
+  15ns pc=004 ir=5012 mo=2012 sw=0000 a=    0 mw=0 aluout=0000
+  25ns pc=006 ir=1018 mo=0001 sw=0000 a=    0 mw=0 aluout=0001
+  30ns pc=006 ir=1018 mo=0001 sw=0000 a=    1 mw=0 aluout=0002
+  35ns pc=008 ir=3016 mo=0001 sw=0000 a=    1 mw=1 aluout=0000
+  45ns pc=00a ir=0014 mo=0000 sw=0000 a=    1 mw=0 aluout=0000
+  50ns pc=00a ir=0014 mo=0000 sw=0000 a=    0 mw=0 aluout=0000
+  55ns pc=00c ir=1016 mo=0001 sw=0000 a=    0 mw=0 aluout=0001
+  60ns pc=00c ir=1016 mo=0001 sw=0000 a=    1 mw=0 aluout=0002
+  65ns pc=00e ir=3014 mo=0001 sw=0000 a=    1 mw=1 aluout=0000
+  75ns pc=010 ir=2000 mo=0016 sw=0000 a=    1 mw=0 aluout=0000
+  85ns pc=000 ir=0016 mo=0001 sw=0000 a=    1 mw=0 aluout=0001
+  95ns pc=002 ir=401a mo=000a sw=0000 a=    1 mw=0 aluout=0000
+ 105ns pc=004 ir=5012 mo=2012 sw=0000 a=    1 mw=0 aluout=0000
+ 115ns pc=006 ir=1018 mo=0001 sw=0000 a=    1 mw=0 aluout=0002
+ 120ns pc=006 ir=1018 mo=0001 sw=0000 a=    2 mw=0 aluout=0003
+ 125ns pc=008 ir=3016 mo=0002 sw=0000 a=    2 mw=1 aluout=0000
+ 135ns pc=00a ir=0014 mo=0001 sw=0000 a=    2 mw=0 aluout=0001
+ 140ns pc=00a ir=0014 mo=0001 sw=0000 a=    1 mw=0 aluout=0001
+ 145ns pc=00c ir=1016 mo=0002 sw=0000 a=    1 mw=0 aluout=0003
+ 150ns pc=00c ir=1016 mo=0002 sw=0000 a=    3 mw=0 aluout=0005
+ 155ns pc=00e ir=3014 mo=0003 sw=0000 a=    3 mw=1 aluout=0000
+ 165ns pc=010 ir=2000 mo=0016 sw=0000 a=    3 mw=0 aluout=0000
+ 175ns pc=000 ir=0016 mo=0002 sw=0000 a=    3 mw=0 aluout=0002
+ 180ns pc=000 ir=0016 mo=0002 sw=0000 a=    2 mw=0 aluout=0002
+ 185ns pc=002 ir=401a mo=000a sw=0000 a=    2 mw=0 aluout=0000
+ 195ns pc=004 ir=5012 mo=2012 sw=0000 a=    2 mw=0 aluout=0000
+ 205ns pc=006 ir=1018 mo=0001 sw=0000 a=    2 mw=0 aluout=0003
+ 210ns pc=006 ir=1018 mo=0001 sw=0000 a=    3 mw=0 aluout=0004
+ 215ns pc=008 ir=3016 mo=0003 sw=0000 a=    3 mw=1 aluout=0000
+ 225ns pc=00a ir=0014 mo=0003 sw=0000 a=    3 mw=0 aluout=0003
+ 235ns pc=00c ir=1016 mo=0003 sw=0000 a=    3 mw=0 aluout=0006
+ 240ns pc=00c ir=1016 mo=0003 sw=0000 a=    6 mw=0 aluout=0009
+ 245ns pc=00e ir=3014 mo=0006 sw=0000 a=    6 mw=1 aluout=0000
+ 255ns pc=010 ir=2000 mo=0016 sw=0000 a=    6 mw=0 aluout=0000
+ 265ns pc=000 ir=0016 mo=0003 sw=0000 a=    6 mw=0 aluout=0003
+ 270ns pc=000 ir=0016 mo=0003 sw=0000 a=    3 mw=0 aluout=0003
+ 275ns pc=002 ir=401a mo=000a sw=0000 a=    3 mw=0 aluout=0000
+ 285ns pc=004 ir=5012 mo=2012 sw=0000 a=    3 mw=0 aluout=0000
+ 295ns pc=006 ir=1018 mo=0001 sw=0000 a=    3 mw=0 aluout=0004
+ 300ns pc=006 ir=1018 mo=0001 sw=0000 a=    4 mw=0 aluout=0005
+ 305ns pc=008 ir=3016 mo=0004 sw=0000 a=    4 mw=1 aluout=0000
+ 315ns pc=00a ir=0014 mo=0006 sw=0000 a=    4 mw=0 aluout=0006
+ 320ns pc=00a ir=0014 mo=0006 sw=0000 a=    6 mw=0 aluout=0006
+ 325ns pc=00c ir=1016 mo=0004 sw=0000 a=    6 mw=0 aluout=000a
+ 330ns pc=00c ir=1016 mo=0004 sw=0000 a=   10 mw=0 aluout=000e
+ 335ns pc=00e ir=3014 mo=000a sw=0000 a=   10 mw=1 aluout=0000
+ 345ns pc=010 ir=2000 mo=0016 sw=0000 a=   10 mw=0 aluout=0000
+ 355ns pc=000 ir=0016 mo=0004 sw=0000 a=   10 mw=0 aluout=0004
+ 360ns pc=000 ir=0016 mo=0004 sw=0000 a=    4 mw=0 aluout=0004
+ 365ns pc=002 ir=401a mo=000a sw=0000 a=    4 mw=0 aluout=0000
+ 375ns pc=004 ir=5012 mo=2012 sw=0000 a=    4 mw=0 aluout=0000
+ 385ns pc=006 ir=1018 mo=0001 sw=0000 a=    4 mw=0 aluout=0005
+ 390ns pc=006 ir=1018 mo=0001 sw=0000 a=    5 mw=0 aluout=0006
+ 395ns pc=008 ir=3016 mo=0005 sw=0000 a=    5 mw=1 aluout=0000
+ 405ns pc=00a ir=0014 mo=000a sw=0000 a=    5 mw=0 aluout=000a
+ 410ns pc=00a ir=0014 mo=000a sw=0000 a=   10 mw=0 aluout=000a
+ 415ns pc=00c ir=1016 mo=0005 sw=0000 a=   10 mw=0 aluout=000f
+ 420ns pc=00c ir=1016 mo=0005 sw=0000 a=   15 mw=0 aluout=0014
+ 425ns pc=00e ir=3014 mo=000f sw=0000 a=   15 mw=1 aluout=0000
+ 435ns pc=010 ir=2000 mo=0016 sw=0000 a=   15 mw=0 aluout=0000
+ 445ns pc=000 ir=0016 mo=0005 sw=0000 a=   15 mw=0 aluout=0005
+ 450ns pc=000 ir=0016 mo=0005 sw=0000 a=    5 mw=0 aluout=0005
+ 455ns pc=002 ir=401a mo=000a sw=0000 a=    5 mw=0 aluout=0000
+ 465ns pc=004 ir=5012 mo=2012 sw=0000 a=    5 mw=0 aluout=0000
+ 475ns pc=006 ir=1018 mo=0001 sw=0000 a=    5 mw=0 aluout=0006
+ 480ns pc=006 ir=1018 mo=0001 sw=0000 a=    6 mw=0 aluout=0007
+ 485ns pc=008 ir=3016 mo=0006 sw=0000 a=    6 mw=1 aluout=0000
+ 495ns pc=00a ir=0014 mo=000f sw=0000 a=    6 mw=0 aluout=000f
+ 500ns pc=00a ir=0014 mo=000f sw=0000 a=   15 mw=0 aluout=000f
+ 505ns pc=00c ir=1016 mo=0006 sw=0000 a=   15 mw=0 aluout=0015
+ 510ns pc=00c ir=1016 mo=0006 sw=0000 a=   21 mw=0 aluout=001b
+ 515ns pc=00e ir=3014 mo=0015 sw=0000 a=   21 mw=1 aluout=0000
+ 525ns pc=010 ir=2000 mo=0016 sw=0000 a=   21 mw=0 aluout=0000
+ 535ns pc=000 ir=0016 mo=0006 sw=0000 a=   21 mw=0 aluout=0006
+ 540ns pc=000 ir=0016 mo=0006 sw=0000 a=    6 mw=0 aluout=0006
+ 545ns pc=002 ir=401a mo=000a sw=0000 a=    6 mw=0 aluout=0000
+ 555ns pc=004 ir=5012 mo=2012 sw=0000 a=    6 mw=0 aluout=0000
+ 565ns pc=006 ir=1018 mo=0001 sw=0000 a=    6 mw=0 aluout=0007
+ 570ns pc=006 ir=1018 mo=0001 sw=0000 a=    7 mw=0 aluout=0008
+ 575ns pc=008 ir=3016 mo=0007 sw=0000 a=    7 mw=1 aluout=0000
+ 585ns pc=00a ir=0014 mo=0015 sw=0000 a=    7 mw=0 aluout=0015
+ 590ns pc=00a ir=0014 mo=0015 sw=0000 a=   21 mw=0 aluout=0015
+ 595ns pc=00c ir=1016 mo=0007 sw=0000 a=   21 mw=0 aluout=001c
+ 600ns pc=00c ir=1016 mo=0007 sw=0000 a=   28 mw=0 aluout=0023
+ 605ns pc=00e ir=3014 mo=001c sw=0000 a=   28 mw=1 aluout=0000
+ 615ns pc=010 ir=2000 mo=0016 sw=0000 a=   28 mw=0 aluout=0000
+ 625ns pc=000 ir=0016 mo=0007 sw=0000 a=   28 mw=0 aluout=0007
+ 630ns pc=000 ir=0016 mo=0007 sw=0000 a=    7 mw=0 aluout=0007
+ 635ns pc=002 ir=401a mo=000a sw=0000 a=    7 mw=0 aluout=0000
+ 645ns pc=004 ir=5012 mo=2012 sw=0000 a=    7 mw=0 aluout=0000
+ 655ns pc=006 ir=1018 mo=0001 sw=0000 a=    7 mw=0 aluout=0008
+ 660ns pc=006 ir=1018 mo=0001 sw=0000 a=    8 mw=0 aluout=0009
+ 665ns pc=008 ir=3016 mo=0008 sw=0000 a=    8 mw=1 aluout=0000
+ 675ns pc=00a ir=0014 mo=001c sw=0000 a=    8 mw=0 aluout=001c
+ 680ns pc=00a ir=0014 mo=001c sw=0000 a=   28 mw=0 aluout=001c
+ 685ns pc=00c ir=1016 mo=0008 sw=0000 a=   28 mw=0 aluout=0024
+ 690ns pc=00c ir=1016 mo=0008 sw=0000 a=   36 mw=0 aluout=002c
+ 695ns pc=00e ir=3014 mo=0024 sw=0000 a=   36 mw=1 aluout=0000
+ 705ns pc=010 ir=2000 mo=0016 sw=0000 a=   36 mw=0 aluout=0000
+ 715ns pc=000 ir=0016 mo=0008 sw=0000 a=   36 mw=0 aluout=0008
+ 720ns pc=000 ir=0016 mo=0008 sw=0000 a=    8 mw=0 aluout=0008
+ 725ns pc=002 ir=401a mo=000a sw=0000 a=    8 mw=0 aluout=0000
+ 735ns pc=004 ir=5012 mo=2012 sw=0000 a=    8 mw=0 aluout=0000
+ 745ns pc=006 ir=1018 mo=0001 sw=0000 a=    8 mw=0 aluout=0009
+ 750ns pc=006 ir=1018 mo=0001 sw=0000 a=    9 mw=0 aluout=000a
+ 755ns pc=008 ir=3016 mo=0009 sw=0000 a=    9 mw=1 aluout=0000
+ 765ns pc=00a ir=0014 mo=0024 sw=0000 a=    9 mw=0 aluout=0024
+ 770ns pc=00a ir=0014 mo=0024 sw=0000 a=   36 mw=0 aluout=0024
+ 775ns pc=00c ir=1016 mo=0009 sw=0000 a=   36 mw=0 aluout=002d
+ 780ns pc=00c ir=1016 mo=0009 sw=0000 a=   45 mw=0 aluout=0036
+ 785ns pc=00e ir=3014 mo=002d sw=0000 a=   45 mw=1 aluout=0000
+ 795ns pc=010 ir=2000 mo=0016 sw=0000 a=   45 mw=0 aluout=0000
+ 805ns pc=000 ir=0016 mo=0009 sw=0000 a=   45 mw=0 aluout=0009
+ 810ns pc=000 ir=0016 mo=0009 sw=0000 a=    9 mw=0 aluout=0009
+ 815ns pc=002 ir=401a mo=000a sw=0000 a=    9 mw=0 aluout=0000
+ 825ns pc=004 ir=5012 mo=2012 sw=0000 a=    9 mw=0 aluout=0000
+ 835ns pc=006 ir=1018 mo=0001 sw=0000 a=    9 mw=0 aluout=000a
+ 840ns pc=006 ir=1018 mo=0001 sw=0000 a=   10 mw=0 aluout=000b
+ 845ns pc=008 ir=3016 mo=000a sw=0000 a=   10 mw=1 aluout=0000
+ 855ns pc=00a ir=0014 mo=002d sw=0000 a=   10 mw=0 aluout=002d
+ 860ns pc=00a ir=0014 mo=002d sw=0000 a=   45 mw=0 aluout=002d
+ 865ns pc=00c ir=1016 mo=000a sw=0000 a=   45 mw=0 aluout=0037
+ 870ns pc=00c ir=1016 mo=000a sw=0000 a=   55 mw=0 aluout=0041
+ 875ns pc=00e ir=3014 mo=0037 sw=0000 a=   55 mw=1 aluout=0000
+ 885ns pc=010 ir=2000 mo=0016 sw=0000 a=   55 mw=0 aluout=0000
+ 895ns pc=000 ir=0016 mo=000a sw=0000 a=   55 mw=0 aluout=000a
+ 900ns pc=000 ir=0016 mo=000a sw=0000 a=   10 mw=0 aluout=000a
+ 905ns pc=002 ir=401a mo=000a sw=0000 a=   10 mw=0 aluout=4000
+ 910ns pc=002 ir=401a mo=000a sw=4000 a=   10 mw=0 aluout=4000
+ 915ns pc=004 ir=5012 mo=2012 sw=4000 a=   10 mw=0 aluout=0000
+ 925ns pc=012 ir=2012 mo=2012 sw=4000 a=   10 mw=0 aluout=0000
+```
+
+您可以清楚的看到，該程式在 870ns 時計算出了總合 SUM=55 的結果，這代表 mcu0bm.v 的設計完成了計算 1+...+10 的功能。
 
 ### 結語
 
-以上的輸出入方式，並非典型的設計，而是屬於「系統單晶片」(SOC) 的設計方式，因此直接將「鍵盤」與「螢幕」的
-輸出入暫存器直接內建在 MCU0 的記憶體之內，這樣的設計會比將「輸出入控制卡」與「CPU」分開的方式更容易一些，
-但是由於這種 ASIC 的量產費用昂貴，所以目前還很少有這種設計方式。
+在上述實作中，採用區塊式設計的 mcu0bm.v 總共有 98 行，比起同樣功能的流程式設計 mcu0m.v 的 51 行多了將近一倍，而且程式的設計難度感覺高了不少，但是我們可以很清楚的掌握到整個設計的硬體結構，這是採用流程式設計所難以確定的。
 
-不過、就簡單性而言，這樣的設計確實非常簡單，因此符合「開放電腦計畫」的 Keep it Simple and Stupid (KISS) 原則，
-所以我們先介紹這樣一個簡易的輸出入設計方式，以便讓讀者能從最簡單的架構入手。 
+當然、由於筆者是「程式人員」，並非硬體設計人員，因此比較喜歡採用流程式的設計方式。不過採用了區塊式設計法設計出 mcu0bm.v 之後，也逐漸開始能理解這種「硬體導向」的設計方式，這大概是我在撰寫本程式時最大的收穫了。
 

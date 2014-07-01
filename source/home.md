@@ -6,9 +6,9 @@
 
 出刊年月       epub           ipad:PDF      A4:PDF     單頁 HTM     原始碼      全部下載
 ------------   ----------     -----------   --------   -----------  ----------  -------------
-2014年2月      [epub]         [ipad.pdf]    [A4.pdf]   [pmag.html]  [code.zip]  [github]
+2014年7月      [epub]         [ipad.pdf]    [A4.pdf]   [pmag.html]  [code.zip]  [github]
 
-### 本期內容 (焦點：邏輯推論的歷史)
+### 本期內容 (焦點：電腦下棋)
 * 前言
     * [編輯小語](editor.html)
     * [授權聲明](license.html)
@@ -17,15 +17,11 @@
     * [布林邏輯與推論系統 -- 何謂嚴格的數學證明？](focus2.html)
     * [謂詞邏輯、一階邏輯與「哥德爾完備定理」](focus3.html)
     * [從程式人的角度證明「哥德爾不完備定理」](focus4.html)
-* 人物速寫
-    * [橫跨「數學、哲學、文學」的諾貝爾大師：伯特蘭·羅素 (Bertrand Arthur William Russell)](people1.html)
-    * [偉大「數學家」的悲慘人生 -- 圖靈、牛頓、哥德爾](people2.html)
 * 程式人文集
-    * [Arduino入門教學(15) – Amarino 的 SensorGraph 範例程式 (作者：Cooper Maa)](article1.html)
-    * [OpenNI 2 基本程式範例 (作者：Heresy Ku)](article2.html)
-    * [根號求解 (作者：研發養成所 Bridan)](article3.html)
-    * [Visual Basic 6.0:大整數運算-加法與乘法 (使用 Array 字串) (作者：廖憲得 0xde)](article4.html)
-    * [開放電腦計畫 (8) – 16 位元微控制器 MCU0 的中斷處理 (作者：陳鍾誠)](article5.html)
+    * [從 Arduino 到 AVR 晶片(2) -- Interrupts 中斷處理 (作者：Cooper Maa)](article1.html)
+    * [對數 (logarithm) (作者：Bridan)](article3.html)
+    * [PhoneGap : Google Map (作者：廖憲得 0xde)](article4.html)
+    * [開放電腦計畫 (12) – 使用區塊式方法設計 MCU0 的 Verilog 程式 (作者：陳鍾誠)](article5.html)
 * [雜誌訊息](info.html)
 
 ### 雜誌取得
@@ -45,5 +41,5 @@
 [A4.pdf]: ../book/A4.pdf
 [code.zip]: ../code.zip
 [pmag.html]: ../book/pmag.html
-[github]: https://github.com/programmermagazine/201403
+[github]: https://github.com/programmermagazine/201407
 

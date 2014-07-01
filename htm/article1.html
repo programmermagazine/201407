@@ -1,0 +1,350 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" href="../css/pmag.css" type="text/css" />
+</head>
+<body>
+<div id="header_wrap">
+   <h1><a href="https://www.facebook.com/groups/programmerMagazine">程式人雜誌</a> <sub> --  <a href="https://dl.dropbox.com/u/101584453/pmag/201403/htm/home.html">2014 年 7 月號</a> (開放公益出版品)</sub></h1>
+</div>
+<div id="content">
+<div id="TOC">
+<ul>
+<li><a href="#從-arduino-到-avr-晶片2----interrupts-中斷處理-作者cooper-maa">從 Arduino 到 AVR 晶片(2) -- Interrupts 中斷處理 (作者：Cooper Maa)</a></li>
+</ul>
+</div>
+<h2 id="從-arduino-到-avr-晶片2----interrupts-中斷處理-作者cooper-maa"><a href="#從-arduino-到-avr-晶片2----interrupts-中斷處理-作者cooper-maa">從 Arduino 到 AVR 晶片(2) -- Interrupts 中斷處理 (作者：Cooper Maa)</a></h2>
+<h3 id="什麼是-interrupts"><a href="#什麼是-interrupts">什麼是 Interrupts?</a></h3>
+<p>當你在工作的時候，突然電話鈴聲響起，於是你把手邊工作停下來、接電話、講電話，然後回來繼續剛剛工作 －－ 這就是所謂的中斷 (Interrupt)，而電話便是中斷源。</p>
+<p>在微控制器中，中斷的來源有很多，諸如 Reset, 外部中斷, Timer, USART, EEPROM, ADC 等。比如，當 Timer Overflow 時可以引發中斷，當 USART 收到資料或資料傳輸完畢時可以引發中斷…</p>
+<p>跟人一樣，在遇到中斷的時候，微控制器的 CPU 也會把手邊的工作停下來，然後跳到預設的位址 (接電話)，接著執行一段程式 (講電話)，執行完後回來繼續進行剛剛的工作。</p>
+<p>在發生中斷的時候，CPU 會老老實實的做這幾個動作：</p>
+<ol style="list-style-type: decimal">
+<li>執行當前的指令</li>
+<li>把下一個指令的位址 push 到 stack 上，停止程式的正常流程，然後</li>
+<li>跳到預設的位址，這個位址稱為中斷向量表，是由 MCU 製造商預先定義好的。 在中斷向量表中，每個中斷都有一個 entry，就看發生什麼中斷，CPU 就跳到哪個 entry。通常每個 entry 裏只是一條 JMP xxxx 的指令，會讓 CPU 輾轉跳到一段稱為中斷服務函式 (Interrupt Service Routine, ISR) 的副程式。</li>
+<li>接著執行中斷服務函式</li>
+<li>當執行完中斷服務函式後，再從 stack 上 pop 出指令的位址，並從它離開的地方繼續執行程式</li>
+</ol>
+<p>電腦比人強的地方，在於它的記憶力好，沒健忘症，當 CPU 處理完中斷後，一定會回去進行原來的工作，除非程式開發者疏忽了把 ISR 寫成跳不出來的無窮迴圈。</p>
+<h3 id="interrupt-vectors"><a href="#interrupt-vectors">Interrupt vectors</a></h3>
+<p>底下這張是 ATmega328 的中斷向量表：</p>
+<div class="figure">
+<img src="../img/arduino_inttable1.png" />
+</div>
+<div class="figure">
+<img src="../img/arduino_inttable2.png" />
+</div>
+<p>當中斷觸發時，CPU 會跳到預設的位址，例如當 ADC 轉換完成時會引發 ADC 中斷，CPU 這時就會跳到 0x002A 這個位址 (vector 22 所在的位址) 去執行指令。如前面說的，通常中斷向量表的每個 entry 裏只是一條 JMP xxxx 的指令，會讓 CPU 輾轉跳到中斷服務函式 (ISR)。</p>
+<p>底下是中斷向量表典型的設定:</p>
+<pre><code>Address Labels Code             Comments
+0x0000         jmp RESET        ; Reset Handler
+0x0002         jmp EXT_INT0     ; IRQ0 Handler
+0x0004         jmp EXT_INT1     ; IRQ1 Handler
+0x0006         jmp PCINT0       ; PCINT0 Handler
+0x0008         jmp PCINT1       ; PCINT1 Handler
+0x000A         jmp PCINT2       ; PCINT2 Handler
+0x000C         jmp WDT          ; Watchdog Timer Handler
+0x000E         jmp TIM2_COMPA   ; Timer2 Compare A Handler
+0x0010         jmp TIM2_COMPB   ; Timer2 Compare B Handler
+0x0012         jmp TIM2_OVF     ; Timer2 Overflow Handler
+0x0014         jmp TIM1_CAPT    ; Timer1 Capture Handler
+0x0016         jmp TIM1_COMPA   ; Timer1 Compare A Handler
+0x0018         jmp TIM1_COMPB   ; Timer1 Compare B Handler
+0x001A         jmp TIM1_OVF     ; Timer1 Overflow Handler
+0x001C         jmp TIM0_COMPA   ; Timer0 Compare A Handler
+0x001E         jmp TIM0_COMPB   ; Timer0 Compare B Handler
+0x0020         jmp TIM0_OVF     ; Timer0 Overflow Handler
+0x0022         jmp SPI_STC      ; SPI Transfer Complete Handler
+0x0024         jmp USART_RXC    ; USART, RX Complete Handler
+0x0026         jmp USART_UDRE   ; USART, UDR Empty Handler
+0x0028         jmp USART_TXC    ; USART, TX Complete Handler
+0x002A         jmp ADC          ; ADC Conversion Complete Handler
+0x002C         jmp EE_RDY       ; EEPROM Ready Handler
+0x002E         jmp ANA_COMP     ; Analog Comparator Handler
+0x0030         jmp TWI          ; 2-wire Serial Interface Handler
+0x0032         jmp SPM_RDY      ; Store Program Memory Ready Handler
+;
+0x0033RESET:   ldi r16, high(RAMEND); Main program start
+0x0034         out SPH,r16 ; Set Stack Pointer to top of RAM
+0x0035         ldi r16, low(RAMEND)
+0x0036         out SPL,r16
+0x0037         sei ; Enable interrupts
+0x0038         &lt;instr&gt; xxx</code></pre>
+<p>以上面的程式為例，當發生 reset 中斷時，MCU 執行的第一條指令是 jmp RESET，因此會跳到 0x0033 的位址，亦即主程式的起始位置。假如是 ADC 中斷，MCU 會先跳到中斷向量表 0x002A 的位址，之後輾轉跳到 ADC 這個中斷服務函式。</p>
+<h3 id="interrupt-service-routine-isr"><a href="#interrupt-service-routine-isr">Interrupt Service Routine (ISR)</a></h3>
+<p>在 Arduino 的程式中，要寫 ISR 是很簡單的一件事。你不需要自己設定中斷向量表，只要會使用 ISR() 這個巨集指令就可以了，例如:</p>
+<pre><code>ISR(ADC_vect)
+{
+
+// Your code here
+
+}</code></pre>
+<p>這表示這個是處理 ADC 轉換的中斷服務函式，將來當 ADC 轉換完成時會引發中斷，CPU 就會來執行這個中斷服務函式。</p>
+<p>底下這張表列出了 ATmega328 的所有中斷向量，可在 <avr/iom328p.h> 中找到</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Vector</th>
+<th align="left">說明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">INT0_vect</td>
+<td align="left">External Interrupt Request 0</td>
+</tr>
+<tr class="even">
+<td align="left">INT1_vect</td>
+<td align="left">External Interrupt Request 1</td>
+</tr>
+<tr class="odd">
+<td align="left">PCINT0_vect</td>
+<td align="left">Pin Change Interrupt Request 0</td>
+</tr>
+<tr class="even">
+<td align="left">PCINT1_vect</td>
+<td align="left">Pin Change Interrupt Request 1</td>
+</tr>
+<tr class="odd">
+<td align="left">PCINT2_vect</td>
+<td align="left">Pin Change Interrupt Request 2</td>
+</tr>
+<tr class="even">
+<td align="left">WDT_vect</td>
+<td align="left">Watchdog Time-out Interrupt</td>
+</tr>
+<tr class="odd">
+<td align="left">TIMER2_COMPA_vect</td>
+<td align="left">Timer/Counter2 Compare Match A</td>
+</tr>
+<tr class="even">
+<td align="left">TIMER2_COMPB_vect</td>
+<td align="left">Timer/Counter2 Compare Match B</td>
+</tr>
+<tr class="odd">
+<td align="left">TIMER2_OVF_vect</td>
+<td align="left">Timer/Counter2 Overflow</td>
+</tr>
+<tr class="even">
+<td align="left">TIMER1_CAPT_vect</td>
+<td align="left">Timer/Counter1 Capture Event</td>
+</tr>
+<tr class="odd">
+<td align="left">TIMER1_COMPA_vect</td>
+<td align="left">Timer/Counter1 Compare Match A</td>
+</tr>
+<tr class="even">
+<td align="left">TIMER1_COMPB_vect</td>
+<td align="left">Timer/Counter1 Compare Match B</td>
+</tr>
+<tr class="odd">
+<td align="left">TIMER1_OVF_vect</td>
+<td align="left">Timer/Counter1 Overflow</td>
+</tr>
+<tr class="even">
+<td align="left">TIMER0_COMPA_vect</td>
+<td align="left">TimerCounter0 Compare Match A</td>
+</tr>
+<tr class="odd">
+<td align="left">TIMER0_COMPB_vect</td>
+<td align="left">TimerCounter0 Compare Match B</td>
+</tr>
+<tr class="even">
+<td align="left">TIMER0_OVF_vect</td>
+<td align="left">Timer/Couner0 Overflow</td>
+</tr>
+<tr class="odd">
+<td align="left">SPI_STC_vect</td>
+<td align="left">SPI Serial Transfer Complete</td>
+</tr>
+<tr class="even">
+<td align="left">USART_RX_vect</td>
+<td align="left">USART Rx Complete</td>
+</tr>
+<tr class="odd">
+<td align="left">USART_UDRE_vect</td>
+<td align="left">USART, Data Register Empty</td>
+</tr>
+<tr class="even">
+<td align="left">USART_TX_vect</td>
+<td align="left">USART Tx Complete</td>
+</tr>
+<tr class="odd">
+<td align="left">ADC_vect</td>
+<td align="left">ADC Conversion Complete</td>
+</tr>
+<tr class="even">
+<td align="left">EE_READY_vect</td>
+<td align="left">EEPROM Ready</td>
+</tr>
+<tr class="odd">
+<td align="left">ANALOG_COMP_vect</td>
+<td align="left">Analog Comparator</td>
+</tr>
+<tr class="even">
+<td align="left">TWI_vect</td>
+<td align="left">Two-wire Serial Interface</td>
+</tr>
+<tr class="odd">
+<td align="left">SPM_READY_vect</td>
+<td align="left">Store Program Memory Read</td>
+</tr>
+</tbody>
+</table>
+<h3 id="外部中斷實驗-external-interrupts"><a href="#外部中斷實驗-external-interrupts">外部中斷實驗 (External Interrupts)</a></h3>
+<h4 id="實驗目的"><a href="#實驗目的">實驗目的</a></h4>
+<p>練習處理外部中斷。在這個實驗中，你將利用 ISR() 巨集指令設定中斷服務函式 (Interrupt Service Routine, ISR)，讓程式在 pin 2 產生外部中斷時自動執行 ISR。</p>
+<h4 id="材料"><a href="#材料">材料</a></h4>
+<ul>
+<li>Arduino 主板 x 1</li>
+<li>LED x 1</li>
+<li>Pushbutton x 1</li>
+<li>10K 歐姆電阻 x 1</li>
+<li>麵包板 x 1</li>
+<li>單心線 x N</li>
+</ul>
+<h4 id="接線"><a href="#接線">接線</a></h4>
+<p>把 LED 接到 pin13，長腳 (陽極) 接到 pin13，短腳 (陰極) 接到 GND 把 pushbutton 一支腳接到 +5V，另一支腳接到 pin 2 同時接一顆 10K 電阻連到 GND</p>
+<div class="figure">
+<img src="../img/arduino_intboard1.png" />
+</div>
+<h4 id="int0-與-int1-外部中斷"><a href="#int0-與-int1-外部中斷">INT0 與 INT1 外部中斷</a></h4>
+<p>如下圖所示，ATmega328 有兩個外部中斷，編號 0 (INT0) 在 pin 2 上，而編號 1 (INT1) 在 pin 3 上:</p>
+<div class="figure">
+<img src="../img/arduino_chippin1.png" />
+</div>
+<p>我們可以決定什麼時候要觸發 INT0 和 INT1 外部中斷，一共有四種狀況可以選擇:</p>
+<ul>
+<li>LOW: 當 pin 為 LOW 時觸發中斷</li>
+<li>CHANGE: 當 pin 狀態改變時觸發中斷，不管是從 HIGH 到 LOW 或從 LOW 到 HIGH</li>
+<li>FALLING: 當 pin 狀態從 HIGH 到 LOW 時觸發中斷，又稱負緣觸發</li>
+<li>RISING: 當 pin 狀態從 LOW 到 HIGH 時觸發中斷，又稱正緣觸發</li>
+</ul>
+<p>選擇的方法是透過 ECIRA (External Interrupt Control Register A) 這個暫存器:</p>
+<div class="figure">
+<img src="../img/arduino_eircra.png" alt="▲ 資料來源: ATmega168/328 Datasheet" /><p class="caption">▲ 資料來源: ATmega168/328 Datasheet</p>
+</div>
+<div class="figure">
+<img src="../img/arduino_tableintsc.png" />
+</div>
+<p>以 INT0 外部中斷為例，假如我們希望 pin 2 狀態一有改變就觸發中斷，那麼就要把 ISC01 和 ISC00 設成 01:</p>
+<pre class="sourceCode CPP"><code class="sourceCode cpp">EICRA &amp;= ~_BV(ISC01);                  <span class="co">// pin 狀態改變時觸發中斷</span>
+EICRA |= _BV(ISC00);                   </code></pre>
+<p>除此以外，我們還要設定 EIMSK (External Interrupt Mask Register) 暫存器以啟用 INT0 或 INT1 中斷:</p>
+<div class="figure">
+<img src="../img/arduino_eimsk.png" />
+</div>
+<p>以 INT0 外部中斷為例，要啟用 INT0 外部中斷，得把 INT0 這個位元設成 1:</p>
+<pre class="sourceCode CPP"><code class="sourceCode cpp">EIMSK |= _BV(INT0);                    <span class="co">// enable INT0</span></code></pre>
+<h4 id="程式"><a href="#程式">程式</a></h4>
+<p>先來看使用 <a href="https://docs.google.com/uc?id=0B4GOwiN2Qm96NmEyOGE4NWItNmEwOS00Mjg5LTljMGQtYjM5NzcyNjE1Mzc0&amp;export=download&amp;hl=en">attachInterrupt()</a> 函式的版本(attachInterrupt.pde)，這我們在「 <a href="http://feedproxy.google.com/~r/CooperMaa/~3/HGxWXannOiM/attachinterrupt.html">attachInterrupt() 與外部中斷</a> 」一文中介紹過，程式的邏輯是，當按鍵被按下時打開 LED 燈號，在按鍵放開時關閉 LED 燈號:</p>
+<pre class="sourceCode CPP"><code class="sourceCode cpp">
+<span class="co">/*</span>
+<span class="co"> * attachInterrupt.pde: attachInterrupt() 與外部中斷</span>
+<span class="co"> */</span>
+
+<span class="dt">const</span> <span class="dt">int</span> interruptNumber = <span class="dv">0</span>;           <span class="co">// Interrupt 0 在 pin 2 上</span>
+<span class="dt">const</span> <span class="dt">int</span> buttonPin = <span class="dv">2</span>;                 <span class="co">// 按鈕(pushbutton)</span>
+<span class="dt">const</span> <span class="dt">int</span> ledPin = <span class="dv">13</span>;                   <span class="co">// LED</span>
+<span class="dt">volatile</span> <span class="dt">int</span> buttonState;                <span class="co">// 用來儲存按鈕狀態</span>
+
+<span class="dt">void</span> setup() {
+  pinMode(ledPin, OUTPUT);               <span class="co">// 把 ledPin 設置成 OUTPUT</span>
+  pinMode(buttonPin, INPUT);             <span class="co">// 把 buttonPin 設置成 INPUT</span>
+  
+  <span class="co">// 把外部中斷(interrupt 0)連接到 buttonStateChanged() 函式</span>
+  <span class="co">// CHANGE 是指當 pin 狀態改變時就觸發中斷&amp;#65292;不管是從 HIGH 到 LOW 或從 LOW 到 HIGH</span>
+  attachInterrupt(interruptNumber, buttonStateChanged, CHANGE);
+}
+
+<span class="dt">void</span> loop() {
+  <span class="co">// do nothing</span>
+}
+
+<span class="co">// Interrupt 0 的中斷處理函式</span>
+<span class="co">// 讀取 buttonPin 的狀態&amp;#65292;並反應到 ledPin 上</span>
+<span class="dt">void</span> buttonStateChanged() {
+  buttonState = digitalRead(buttonPin);
+  digitalWrite(ledPin, buttonState);
+}</code></pre>
+<p>要特別注意是，程式裏的 buttonState 變數是宣告成 volatile，這樣做的目的是告訴 Compiler 不要做最佳化，避免變數狀態不同步。給你一個建議，程式主體跟 ISR 都會用到的變數，盡可能把它宣告成 volatile。</p>
+<p>接下來是改成用 EICRA 和 EIMSK 暫存器和 ISR() 巨集指令的版本:</p>
+<pre class="sourceCode CPP"><code class="sourceCode cpp"><span class="co">/*</span>
+<span class="co"> * externalInterrupt.pde: INT 0 外部中斷</span>
+<span class="co"> */</span>
+
+<span class="dt">const</span> <span class="dt">int</span> interruptNumber = <span class="dv">0</span>;           <span class="co">// Interrupt 0 在 pin 2 上</span>
+<span class="dt">const</span> <span class="dt">int</span> buttonPin = <span class="dv">2</span>;                 <span class="co">// 按鈕(pushbutton)</span>
+<span class="dt">const</span> <span class="dt">int</span> ledPin = <span class="dv">13</span>;                   <span class="co">// LED</span>
+<span class="dt">volatile</span> <span class="dt">int</span> buttonState;                <span class="co">// 用來儲存按鈕狀態</span>
+
+<span class="dt">void</span> setup() {
+  pinMode(ledPin, OUTPUT);               <span class="co">// 把 ledPin 設置成 OUTPUT</span>
+  pinMode(buttonPin, INPUT);             <span class="co">// 把 buttonPin 設置成 INPUT</span>
+  
+  EIMSK |= _BV(INT0);                    <span class="co">// enable INT 0</span>
+  EICRA &amp;= ~_BV(ISC01);                  <span class="co">// pin 狀態改變時觸發中斷</span>
+  EICRA |= _BV(ISC00);                   
+}
+
+<span class="dt">void</span> loop() {
+  <span class="co">// do nothing</span>
+}
+
+<span class="co">// 讀取 buttonPin 的狀態&amp;#65292;並反應到 ledPin 上</span>
+<span class="dt">void</span> buttonStateChanged() {
+  buttonState = digitalRead(buttonPin);
+  digitalWrite(ledPin, buttonState);
+}
+
+<span class="co">// Interrupt 0 的中斷處理函式</span>
+ISR(INT0_vect) {
+  buttonStateChanged();
+}</code></pre>
+<p>簡單的說，要處理 INT0 外部中斷，有三個步驟要做:</p>
+<ol style="list-style-type: decimal">
+<li>用 ISR() 巨集指令定義中斷服務函式</li>
+<li>設定 EIMSK 暫存器啟用 INT0 中斷</li>
+<li>設定 EICRA 暫存器決定什麼時候該觸發中斷</li>
+</ol>
+<p>_BV() 巨集我們在「2.2) Blink part2」一文中已經介紹過，如果不想使用 _BV()，這樣寫也是可以的:</p>
+<pre class="sourceCode CPP"><code class="sourceCode cpp">EIMSK |= (<span class="dv">1</span> &lt;&lt; INT0);                  <span class="co">// enable INT 0</span>
+EICRA |= (<span class="dv">1</span> &lt;&lt; ISC00);                 <span class="co">// pin 狀態改變時觸發中斷</span>
+EICRA &amp;= ~(<span class="dv">1</span> &lt;&lt; ISC01);</code></pre>
+<p>另外，ISR() 巨集指令也可以改用 SIGNAL() 巨集指令，SIGNAL() 是早期寫 ISR 的巨集指令。建議你盡可能使用 ISR() 巨集指令，因為 ISR() 比較直覺，只不過你必須知道 SIGNAL() 和 ISR() 幾乎是一樣的東西，而且很多前輩留下的 AVR 程式是用 SIGNAL() 巨集指令。</p>
+<h4 id="延伸閱讀"><a href="#延伸閱讀">延伸閱讀</a></h4>
+<ul>
+<li><a href="http://feedproxy.google.com/~r/CooperMaa/~3/HGxWXannOiM/attachinterrupt.html">attachInterrupt() 與外部中斷</a></li>
+</ul>
+<p>【本文作者為馬萬圳，原文網址為： <a href="http://coopermaa2nd.blogspot.tw/2011/04/3-interrupts.html">http://coopermaa2nd.blogspot.tw/2011/04/3-interrupts.html</a> , <a href="http://coopermaa2nd.blogspot.tw/2011/07/31-external-interrupts.html">http://coopermaa2nd.blogspot.tw/2011/07/31-external-interrupts.html</a> ，由陳鍾誠編輯後納入本雜誌】</p>
+</div>
+<div id="footer">
+<a href="https://www.facebook.com/groups/programmerMagazine/">程式人雜誌</a> ，採用 <a href="http://creativecommons.org/licenses/by-sa/3.0/tw/ ">創作共用：姓名標示、相同方式分享</a> 授權，歡迎加入 <a href="https://www.facebook.com/groups/programmerMagazine/">雜誌社團</a>
+</div>
+</body>
+</html>
