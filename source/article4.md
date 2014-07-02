@@ -1,7 +1,5 @@
 ## [PhoneGap] Google Map (作者：廖憲得 0xde)
 
-### 大整數加法
-
 ```html
 <!DOCTYPE html>
 <html>
